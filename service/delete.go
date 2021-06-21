@@ -14,7 +14,7 @@ func deleteConverter() *command {
 		"Converterを削除します。自身が持つconverterの一覧は、`/list`から確認することができます。\n" +
 		"`/delete <converter_id>`\n" +
 		"\n" +
-		"- `/create 00000000-0000-0000-0000-000000000000` 指定したconverterを削除します。"
+		"- `/delete 00000000-0000-0000-0000-000000000000` 指定したconverterを削除します。"
 
 	return &command{
 		names: []string{"delete"},
