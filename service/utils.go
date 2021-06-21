@@ -15,3 +15,14 @@ func (h *Handlers) postMessage(e *messageCreatedEvent, message string) (*traq.Me
 	})
 	return &m, err
 }
+
+// postDirectMessage posts message to the specified user.
+func (h *Handlers) postDirectMessage(userID string, message string) (*traq.Message, error) {
+	m, _, err := h.api.UserApi.PostDirectMessage(h.auth, userID, &traq.UserApiPostDirectMessageOpts{
+		PostMessageRequest: optional.NewInterface(traq.PostMessageRequest{
+			Content: message,
+			Embed:   true,
+		}),
+	})
+	return &m, err
+}

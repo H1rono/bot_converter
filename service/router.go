@@ -12,23 +12,17 @@ import (
 	"git.trap.jp/toki/bot_converter/repository"
 )
 
-type Config struct {
-	VerificationToken string
-	AccessToken       string
-	BotID             uuid.UUID
-	Prefix            string
-}
-
 type Handlers struct {
 	repo     repository.Repository
 	api      *traq.APIClient
 	auth     context.Context
 	botID    uuid.UUID
 	prefix   string
+	origin   string
 	commands map[string]*command
 }
 
-func SetUp(e *echo.Echo, c Config, repo repository.Repository) {
+func SetUp(c Config, repo repository.Repository) echo.HandlerFunc {
 	client := traq.NewAPIClient(traq.NewConfiguration())
 	auth := context.WithValue(context.Background(), traq.ContextAccessToken, c.AccessToken)
 
@@ -38,6 +32,7 @@ func SetUp(e *echo.Echo, c Config, repo repository.Repository) {
 		auth:     auth,
 		botID:    c.BotID,
 		prefix:   c.Prefix,
+		origin:   c.Origin,
 		commands: make(map[string]*command),
 	}
 
@@ -46,7 +41,7 @@ func SetUp(e *echo.Echo, c Config, repo repository.Repository) {
 	h.setUpCommands()
 	server := traqbot.NewBotServer(c.VerificationToken, eh)
 
-	e.POST("/bot", echo.WrapHandler(server))
+	return echo.WrapHandler(server)
 }
 
 func (h *Handlers) setUpHandlers(eh traqbot.EventHandlers) {

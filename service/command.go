@@ -9,5 +9,9 @@ type command struct {
 func commands() []*command {
 	return []*command{
 		ping(),
+		create(),
+		info(),
+		list(),
+		deleteConverter(),
 	}
 }

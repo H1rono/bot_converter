@@ -2,20 +2,26 @@ package main
 
 import (
 	"fmt"
-	"git.trap.jp/toki/bot_converter/migrate"
-	"git.trap.jp/toki/bot_converter/service"
+	"log"
+	"strings"
+
 	"github.com/gofrs/uuid"
 	"github.com/spf13/viper"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
-	"log"
-	"strings"
+
+	"git.trap.jp/toki/bot_converter/migrate"
+	"git.trap.jp/toki/bot_converter/router"
+	"git.trap.jp/toki/bot_converter/service"
 )
 
 // Config describes server config.
 type Config struct {
 	// Port number to listen on.
 	Port int `mapstructure:"port" yaml:"port"`
+
+	// Origin is the origin URL of the bot.
+	Origin string `mapstructure:"origin" yaml:"origin"`
 
 	// Traq describes traq bot settings.
 	Traq struct {
@@ -48,6 +54,7 @@ var c Config
 
 func init() {
 	viper.SetDefault("port", 3000)
+	viper.SetDefault("origin", "")
 	viper.SetDefault("traq.verificationToken", "")
 	viper.SetDefault("traq.accessToken", "")
 	viper.SetDefault("traq.userID", uuid.Nil)
@@ -94,6 +101,13 @@ func initDB() (*gorm.DB, error) {
 	return db, nil
 }
 
+// provideRouterConfig provides router.Config.
+func provideRouterConfig() router.Config {
+	return router.Config{
+		AccessToken: c.Traq.AccessToken,
+	}
+}
+
 // provideBotConfig provides service.Config.
 func provideBotConfig() service.Config {
 	return service.Config{
@@ -101,5 +115,6 @@ func provideBotConfig() service.Config {
 		AccessToken:       c.Traq.AccessToken,
 		BotID:             uuid.Must(uuid.FromString(c.Traq.UserID)),
 		Prefix:            c.Traq.Prefix,
+		Origin:            c.Origin,
 	}
 }

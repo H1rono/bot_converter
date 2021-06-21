@@ -23,6 +23,7 @@ require (
 	golang.org/x/oauth2 v0.0.0-20210427180440-81ed05c6b58c // indirect
 	golang.org/x/sys v0.0.0-20210503173754-0981d6026fa6 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
+	gopkg.in/go-playground/webhooks.v5 v5.17.0
 	gopkg.in/ini.v1 v1.62.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gorm.io/driver/mysql v1.0.1

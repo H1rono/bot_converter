@@ -21,8 +21,8 @@ func main() {
 
 	// router
 	e := echo.New()
-	router.SetUp(e, repo)
-	service.SetUp(e, provideBotConfig(), repo)
+	botHandler := service.SetUp(provideBotConfig(), repo)
+	router.SetUp(provideRouterConfig(), e, repo, botHandler)
 
 	if err := e.Start(fmt.Sprintf(":%d", c.Port)); err != nil {
 		log.Fatalf("an error occurred while starting server: %s", err)
