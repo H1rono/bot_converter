@@ -1,0 +1,9 @@
+/idea/
+/dev/data/
+
+.dockerignore
+.gitignore
+docker-compose.yml
+Dockerfile
+README.md
+showcase.yml

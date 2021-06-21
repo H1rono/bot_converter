@@ -1,0 +1,9 @@
+type: runtime
+use_mariadb: true
+startup: |
+  go mod download
+  go build -o poll
+envs:
+  PORT: 3000
+entrypoint: ./poll
+http_proxy: 3000
