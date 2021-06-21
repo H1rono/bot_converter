@@ -20,7 +20,7 @@ type Config struct {
 	// Port number to listen on.
 	Port int `mapstructure:"port" yaml:"port"`
 
-	// Origin is the origin URL of the bot.
+	// Origin is the origin URL of the bot. e.g. http://q.trap.jp
 	Origin string `mapstructure:"origin" yaml:"origin"`
 
 	// Traq describes traq bot settings.

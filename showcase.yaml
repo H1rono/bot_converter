@@ -2,8 +2,8 @@ type: runtime
 use_mariadb: true
 startup: |
   go mod download
-  go build -o poll
+  go build -o converter
 envs:
   PORT: 3000
-entrypoint: ./poll
+entrypoint: ./converter
 http_proxy: 3000

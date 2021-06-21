@@ -91,8 +91,8 @@ func create() *command {
 				"\n"+
 				":juuyo: **以下のURL及びconverterのIDは公開しないでください。公開してしまった場合、自由にメッセージを投稿される可能性があります。**\n"+
 				"\n"+
-				"- Gitea: %s/%s/gitea\n"+
-				"- GitHub: %s/%s/github\n"+
+				"- Gitea: %s/converters/%s/gitea\n"+
+				"- GitHub: %s/converters/%s/github\n"+
 				"\n"+
 				"ここに列挙されていないサービスへの対応を望む場合は、BOT製作者に連絡してください。\n"+
 				"\n"+
