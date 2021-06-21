@@ -12,7 +12,7 @@ func info() *command {
 	const help = "### Usage\n" +
 		"\n" +
 		"Converterの情報を取得します。自身が持つconverterの一覧は、`/list`から確認することができます。\n" +
-		"`/delete <converter_id>`\n" +
+		"`/info <converter_id>`\n" +
 		"\n" +
 		"- `/create 00000000-0000-0000-0000-000000000000` 指定したconverterを削除します。"
 
