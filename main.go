@@ -8,7 +8,7 @@ import (
 
 	"git.trap.jp/toki/bot_converter/repository"
 	"git.trap.jp/toki/bot_converter/router"
-	"git.trap.jp/toki/bot_converter/service"
+	"git.trap.jp/toki/bot_converter/service/bot"
 )
 
 func main() {
@@ -19,10 +19,16 @@ func main() {
 	}
 	repo := repository.NewGormRepository(db)
 
+	// bot
+	go func() {
+		if err := bot.Start(provideBotConfig(), repo); err != nil {
+			panic(err)
+		}
+	}()
+
 	// router
 	e := echo.New()
-	botHandler := service.SetUp(provideBotConfig(), repo)
-	router.SetUp(provideRouterConfig(), e, repo, botHandler)
+	router.SetUp(provideRouterConfig(), e, repo)
 
 	if err := e.Start(fmt.Sprintf(":%d", c.Port)); err != nil {
 		log.Fatalf("an error occurred while starting server: %s", err)

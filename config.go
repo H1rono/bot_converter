@@ -12,7 +12,7 @@ import (
 
 	"git.trap.jp/toki/bot_converter/migrate"
 	"git.trap.jp/toki/bot_converter/router"
-	"git.trap.jp/toki/bot_converter/service"
+	"git.trap.jp/toki/bot_converter/service/bot"
 )
 
 // Config describes server config.
@@ -20,13 +20,11 @@ type Config struct {
 	// Port number to listen on.
 	Port int `mapstructure:"port" yaml:"port"`
 
-	// Origin is the origin URL of the bot. e.g. http://q.trap.jp
+	// Origin is the origin URL of the bot.
 	Origin string `mapstructure:"origin" yaml:"origin"`
 
 	// Traq describes traq bot settings.
 	Traq struct {
-		// VerificationToken is verification token for verifying http bot events.
-		VerificationToken string `mapstructure:"verificationToken" yaml:"verificationToken"`
 		// AccessToken is access token for accessing traq API.
 		AccessToken string `mapstructure:"accessToken" yaml:"accessToken"`
 		// UserID is the user UUID of the bot.
@@ -55,7 +53,6 @@ var c Config
 func init() {
 	viper.SetDefault("port", 3000)
 	viper.SetDefault("origin", "")
-	viper.SetDefault("traq.verificationToken", "")
 	viper.SetDefault("traq.accessToken", "")
 	viper.SetDefault("traq.userID", uuid.Nil)
 	viper.SetDefault("traq.prefix", "/")
@@ -109,12 +106,11 @@ func provideRouterConfig() router.Config {
 }
 
 // provideBotConfig provides service.Config.
-func provideBotConfig() service.Config {
-	return service.Config{
-		VerificationToken: c.Traq.VerificationToken,
-		AccessToken:       c.Traq.AccessToken,
-		BotID:             uuid.Must(uuid.FromString(c.Traq.UserID)),
-		Prefix:            c.Traq.Prefix,
-		Origin:            c.Origin,
+func provideBotConfig() bot.Config {
+	return bot.Config{
+		AccessToken: c.Traq.AccessToken,
+		BotID:       uuid.Must(uuid.FromString(c.Traq.UserID)),
+		Prefix:      c.Traq.Prefix,
+		Origin:      c.Origin,
 	}
 }

@@ -17,7 +17,7 @@ type Handlers struct {
 	accessToken string
 }
 
-func SetUp(c Config, e *echo.Echo, repo repository.Repository, botHandler echo.HandlerFunc) {
+func SetUp(c Config, e *echo.Echo, repo repository.Repository) {
 	client := traq.NewAPIClient(traq.NewConfiguration())
 	auth := context.WithValue(context.Background(), traq.ContextAccessToken, c.AccessToken)
 
@@ -31,7 +31,6 @@ func SetUp(c Config, e *echo.Echo, repo repository.Repository, botHandler echo.H
 	retrieveCID := retrieveConverterID(h)
 
 	e.GET("/", h.GetRoot)
-	e.POST("/bot", botHandler)
 	convertersAPI := e.Group("/converters")
 	{
 		convertersCID := convertersAPI.Group("/:converterID", retrieveCID)

@@ -1,4 +1,4 @@
-package service
+package bot
 
 type command struct {
 	names  []string

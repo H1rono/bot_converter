@@ -1,11 +1,11 @@
-package service
+package bot
 
 import (
 	"fmt"
 	"log"
 
 	"github.com/gofrs/uuid"
-	traqbot "github.com/traPtitech/traq-bot"
+	"github.com/traPtitech/traq-ws-bot/payload"
 )
 
 func create() *command {
@@ -19,7 +19,7 @@ func create() *command {
 		"- `/create #path/to/channel my_webhook_secret` シークレットを指定した、 #path/to/channel に投稿するconverterを作成します。\n" +
 		"  - :juuyo: シークレットを指定する場合は、シークレットの漏洩を防ぐためpublicチャンネルではなく本BOTへのDMで作成することを推奨します。"
 
-	findEmbed := func(e *messageCreatedEvent, raw, embedType string) (traqbot.EmbeddedInfoPayload, bool) {
+	findEmbed := func(e *messageCreatedEvent, raw, embedType string) (payload.EmbeddedInfo, bool) {
 		for _, embed := range e.Message.Embedded {
 			if embedType != embed.Type {
 				continue
@@ -28,7 +28,7 @@ func create() *command {
 				return embed, true
 			}
 		}
-		return traqbot.EmbeddedInfoPayload{}, false
+		return payload.EmbeddedInfo{}, false
 	}
 
 	return &command{

@@ -1,15 +1,15 @@
-package service
+package bot
 
 import (
 	"log"
 	"strings"
 
-	traqbot "github.com/traPtitech/traq-bot"
+	"github.com/traPtitech/traq-ws-bot/payload"
 )
 
 type messageCreatedEvent struct {
-	traqbot.BasePayload
-	Message traqbot.MessagePayload
+	payload.Base
+	Message payload.Message
 	IsDM    bool
 }
 

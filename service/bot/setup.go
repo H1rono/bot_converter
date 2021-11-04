@@ -1,13 +1,13 @@
-package service
+package bot
 
 import (
 	"context"
 	"log"
 
 	"github.com/gofrs/uuid"
-	"github.com/labstack/echo/v4"
 	"github.com/sapphi-red/go-traq"
-	traqbot "github.com/traPtitech/traq-bot"
+	traqbot "github.com/traPtitech/traq-ws-bot"
+	"github.com/traPtitech/traq-ws-bot/payload"
 
 	"git.trap.jp/toki/bot_converter/repository"
 )
@@ -22,7 +22,8 @@ type Handlers struct {
 	commands map[string]*command
 }
 
-func SetUp(c Config, repo repository.Repository) echo.HandlerFunc {
+// Start starts the bot service. Blocks on success.
+func Start(c Config, repo repository.Repository) error {
 	client := traq.NewAPIClient(traq.NewConfiguration())
 	auth := context.WithValue(context.Background(), traq.ContextAccessToken, c.AccessToken)
 
@@ -36,27 +37,32 @@ func SetUp(c Config, repo repository.Repository) echo.HandlerFunc {
 		commands: make(map[string]*command),
 	}
 
-	eh := traqbot.EventHandlers{}
-	h.setUpHandlers(eh)
+	b, err := traqbot.NewBot(&traqbot.Options{
+		AccessToken:   c.AccessToken,
+		AutoReconnect: true,
+	})
+	if err != nil {
+		return err
+	}
+	h.setUpHandlers(b)
 	h.setUpCommands()
-	server := traqbot.NewBotServer(c.VerificationToken, eh)
 
-	return echo.WrapHandler(server)
+	return b.Start()
 }
 
-func (h *Handlers) setUpHandlers(eh traqbot.EventHandlers) {
-	eh.SetMessageCreatedHandler(func(p *traqbot.MessageCreatedPayload) {
+func (h *Handlers) setUpHandlers(b *traqbot.Bot) {
+	b.OnMessageCreated(func(p *payload.MessageCreated) {
 		h.MessageCreated(&messageCreatedEvent{
-			BasePayload: p.BasePayload,
-			Message:     p.Message,
-			IsDM:        false,
+			Base:    p.Base,
+			Message: p.Message,
+			IsDM:    false,
 		})
 	})
-	eh.SetDirectMessageCreatedHandler(func(p *traqbot.DirectMessageCreatedPayload) {
+	b.OnDirectMessageCreated(func(p *payload.DirectMessageCreated) {
 		h.MessageCreated(&messageCreatedEvent{
-			BasePayload: p.BasePayload,
-			Message:     p.Message,
-			IsDM:        true,
+			Base:    p.Base,
+			Message: p.Message,
+			IsDM:    true,
 		})
 	})
 }

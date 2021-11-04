@@ -1,4 +1,4 @@
-package service
+package bot
 
 import (
 	"github.com/antihax/optional"
