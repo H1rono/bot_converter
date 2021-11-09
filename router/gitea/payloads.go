@@ -144,7 +144,6 @@ type review struct {
 // ---------- Events ----------
 
 type issueEvent struct {
-	Secret     string     `json:"secret"`
 	Action     string     `json:"action"`
 	Number     int        `json:"number"`
 	Issue      issue      `json:"issue"`
@@ -153,7 +152,6 @@ type issueEvent struct {
 }
 
 type issueCommentEvent struct {
-	Secret     string     `json:"secret"`
 	Action     string     `json:"action"`
 	Issue      issue      `json:"issue"`
 	Comment    comment    `json:"comment"`
@@ -162,7 +160,6 @@ type issueCommentEvent struct {
 }
 
 type pullRequestEvent struct {
-	Secret      string      `json:"secret"`
 	Action      string      `json:"action"`
 	Number      int         `json:"number"`
 	PullRequest pullRequest `json:"pull_request"`

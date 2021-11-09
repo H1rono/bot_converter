@@ -1,8 +1,13 @@
 package gitea
 
 import (
+	"crypto/hmac"
+	"crypto/sha1"
+	"encoding/hex"
+	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"strconv"
 	"strings"
 
@@ -10,67 +15,68 @@ import (
 )
 
 var (
-	ErrBadSecret = errors.New("bad secret")
+	ErrBadSignature = errors.New("bad signature")
 )
 
 func MakeMessage(c echo.Context, secret string) (string, error) {
 	event := c.Request().Header.Get("X-Gitea-Event")
 
+	payload, err := io.ReadAll(c.Request().Body)
+	if err != nil {
+		return "", err
+	}
+
+	if len(secret) > 0 {
+		signature := c.Request().Header.Get("X-Hub-Signature")
+		if len(signature) == 0 {
+			return "", ErrBadSignature
+		}
+		mac := hmac.New(sha1.New, []byte(secret))
+		_, _ = mac.Write(payload)
+		expectedMAC := hex.EncodeToString(mac.Sum(nil))
+
+		if !hmac.Equal([]byte(signature[5:]), []byte(expectedMAC)) {
+			return "", ErrBadSignature
+		}
+	}
+
 	switch event {
 	case "issues":
-		payload := issueEvent{}
-		if err := c.Bind(&payload); err != nil {
+		var eventPayload issueEvent
+		if err := json.Unmarshal(payload, &eventPayload); err != nil {
 			return "", err
 		}
-		if len(secret) > 0 && payload.Secret != secret {
-			return "", ErrBadSecret
-		}
-		return handleIssuesEvent(&payload)
+		return handleIssuesEvent(&eventPayload)
 	case "issue_comment":
-		payload := issueCommentEvent{}
-		if err := c.Bind(&payload); err != nil {
+		var eventPayload issueCommentEvent
+		if err := json.Unmarshal(payload, &eventPayload); err != nil {
 			return "", err
 		}
-		if len(secret) > 0 && payload.Secret != secret {
-			return "", ErrBadSecret
-		}
-		return handleIssueCommentEvent(&payload)
+		return handleIssueCommentEvent(&eventPayload)
 	case "pull_request":
-		payload := pullRequestEvent{}
-		if err := c.Bind(&payload); err != nil {
+		var eventPayload pullRequestEvent
+		if err := json.Unmarshal(payload, &eventPayload); err != nil {
 			return "", err
 		}
-		if len(secret) > 0 && payload.Secret != secret {
-			return "", ErrBadSecret
-		}
-		return handlePullRequestEvent(&payload)
+		return handlePullRequestEvent(&eventPayload)
 	case "pull_request_approved":
-		payload := pullRequestEvent{}
-		if err := c.Bind(&payload); err != nil {
+		var eventPayload pullRequestEvent
+		if err := json.Unmarshal(payload, &eventPayload); err != nil {
 			return "", err
 		}
-		if len(secret) > 0 && payload.Secret != secret {
-			return "", ErrBadSecret
-		}
-		return handlePullRequestReviewEvent(&payload, "approved")
+		return handlePullRequestReviewEvent(&eventPayload, "approved")
 	case "pull_request_comment":
-		payload := pullRequestEvent{}
-		if err := c.Bind(&payload); err != nil {
+		var eventPayload pullRequestEvent
+		if err := json.Unmarshal(payload, &eventPayload); err != nil {
 			return "", err
 		}
-		if len(secret) > 0 && payload.Secret != secret {
-			return "", ErrBadSecret
-		}
-		return handlePullRequestReviewEvent(&payload, "comment")
+		return handlePullRequestReviewEvent(&eventPayload, "comment")
 	case "pull_request_rejected":
-		payload := pullRequestEvent{}
-		if err := c.Bind(&payload); err != nil {
+		var eventPayload pullRequestEvent
+		if err := json.Unmarshal(payload, &eventPayload); err != nil {
 			return "", err
 		}
-		if len(secret) > 0 && payload.Secret != secret {
-			return "", ErrBadSecret
-		}
-		return handlePullRequestReviewEvent(&payload, "rejected")
+		return handlePullRequestReviewEvent(&eventPayload, "rejected")
 	default:
 		return "", nil
 	}

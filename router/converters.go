@@ -43,8 +43,8 @@ func (h *Handlers) postConverterGitea(c echo.Context) error {
 	}
 	msg, err := gitea.MakeMessage(c, secret)
 	if err != nil {
-		if err == gitea.ErrBadSecret {
-			return echo.NewHTTPError(http.StatusUnauthorized, "bad secret")
+		if err == gitea.ErrBadSignature {
+			return echo.NewHTTPError(http.StatusUnauthorized, "bad signature")
 		} else {
 			c.Logger().Error(err)
 			return echo.NewHTTPError(http.StatusInternalServerError, "internal server error")
