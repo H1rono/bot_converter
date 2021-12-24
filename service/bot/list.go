@@ -45,7 +45,8 @@ func list() *command {
 				sb.WriteString(fmt.Sprintf("### Converter `%s`\n", c.ID))
 				sb.WriteString("\n")
 				// TODO: チャンネル名
-				sb.WriteString(fmt.Sprintf("- 投稿先チャンネル: !{\"type\":\"channel\",\"raw\":\"ココ\",\"id\":\"%s\"}", c.ChannelID))
+				sb.WriteString(fmt.Sprintf("- 投稿先チャンネル: !{\"type\":\"channel\",\"raw\":\"ココ\",\"id\":\"%s\"}\n", c.ChannelID))
+				sb.WriteString("\n")
 			}
 
 			// reply in DM
