@@ -38,8 +38,7 @@ func Start(c Config, repo repository.Repository) error {
 	}
 
 	b, err := traqbot.NewBot(&traqbot.Options{
-		AccessToken:   c.AccessToken,
-		AutoReconnect: true,
+		AccessToken: c.AccessToken,
 	})
 	if err != nil {
 		return err
