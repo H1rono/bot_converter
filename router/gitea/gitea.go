@@ -95,8 +95,12 @@ func handleIssuesEvent(payload *issueEvent) (string, error) {
 	switch payload.Action {
 	case "opened":
 		m.WriteString(fmt.Sprintf(":git_issue_opened: %s Opened by `%s`\n", issueName, senderName))
+		m.WriteString(fmt.Sprintf("\n---\n"))
+		m.WriteString(fmt.Sprintf("%s", payload.Issue.Body))
 	case "edited":
 		m.WriteString(fmt.Sprintf(":pencil: %s Edited by `%s`\n", issueName, senderName))
+		m.WriteString(fmt.Sprintf("\n---\n"))
+		m.WriteString(fmt.Sprintf("%s", payload.Issue.Body))
 	case "assigned":
 		m.WriteString(fmt.Sprintf(":bust_in_silhouette: %s Assigned to `%s`\n", issueName, payload.Issue.Assignee.Username))
 		m.WriteString(fmt.Sprintf("By `%s`\n", senderName))
@@ -119,9 +123,6 @@ func handleIssuesEvent(payload *issueEvent) (string, error) {
 	case "reopened":
 		m.WriteString(fmt.Sprintf(":git_issue_opened: %s Reopened by `%s`\n", issueName, senderName))
 	}
-
-	m.WriteString(fmt.Sprintf("\n---\n"))
-	m.WriteString(fmt.Sprintf("%s", payload.Issue.Body))
 
 	return m.String(), nil
 }
@@ -162,8 +163,12 @@ func handlePullRequestEvent(payload *pullRequestEvent) (string, error) {
 	switch payload.Action {
 	case "opened":
 		m.WriteString(fmt.Sprintf(":git_pull_request: %s Opened by `%s`\n", prName, senderName))
+		m.WriteString(fmt.Sprintf("\n---\n"))
+		m.WriteString(fmt.Sprintf("%s", payload.PullRequest.Body))
 	case "edited":
 		m.WriteString(fmt.Sprintf(":pencil: %s Edited by `%s`\n", prName, senderName))
+		m.WriteString(fmt.Sprintf("\n---\n"))
+		m.WriteString(fmt.Sprintf("%s", payload.PullRequest.Body))
 	case "synchronized":
 		m.WriteString(fmt.Sprintf(":git_push_repo: New Commit(s) to %s by `%s`\n", prName, senderName))
 	case "assigned":
@@ -193,9 +198,6 @@ func handlePullRequestEvent(payload *pullRequestEvent) (string, error) {
 	case "reopened":
 		m.WriteString(fmt.Sprintf(":git_pull_request: %s Reopened by `%s`\n", prName, senderName))
 	}
-
-	m.WriteString(fmt.Sprintf("\n---\n"))
-	m.WriteString(fmt.Sprintf("%s", payload.PullRequest.Body))
 
 	return m.String(), nil
 }
