@@ -18,4 +18,8 @@ const (
 	Transfer            = "arrow_right"
 	Pin                 = "pushpin"
 	Comment             = "comment"
+	CheckSuccess        = "git_workflow_success"
+	CheckFail           = "git_workflow_fail"
+	CheckSkip           = "git_workflow_skip"
+	CheckCancel         = "git_workflow_cancel"
 )
