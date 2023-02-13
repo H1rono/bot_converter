@@ -13,6 +13,7 @@ func MakeMessage(c echo.Context, secret string) (string, error) {
 	hook, _ := github.New(options...)
 
 	payload, err := hook.Parse(c.Request(),
+		github.CheckRunEvent,
 		github.IssuesEvent,
 		github.IssueCommentEvent,
 		github.PushEvent,
@@ -24,6 +25,9 @@ func MakeMessage(c echo.Context, secret string) (string, error) {
 	}
 
 	switch payload.(type) {
+	case github.CheckRunPayload:
+		payload := payload.(github.CheckRunPayload)
+		return checkRunHandler(payload)
 	case github.IssuesPayload:
 		payload := payload.(github.IssuesPayload)
 		return issuesHandler(payload)
