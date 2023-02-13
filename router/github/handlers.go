@@ -9,6 +9,51 @@ import (
 	"git.trap.jp/toki/bot_converter/router/github/icons"
 )
 
+func checkRunHandler(payload github.CheckRunPayload) (string, error) {
+	if payload.Action != "completed" {
+		return "", nil
+	}
+	var (
+		icon       string
+		conclusion string
+	)
+	switch payload.CheckRun.Conclusion {
+	case "success":
+		icon = icons.CheckSuccess
+		conclusion = "succeeded"
+	case "failure":
+		icon = icons.CheckFail
+		conclusion = "failed"
+	case "startup_failure":
+		icon = icons.CheckFail
+		conclusion = "startup failed"
+	case "timed_out":
+		icon = icons.CheckFail
+		conclusion = "timed out"
+	case "skipped":
+		icon = icons.CheckSkip
+		conclusion = "skipped"
+	case "cancelled":
+		icon = icons.CheckCancel
+		conclusion = "cancelled"
+	default:
+		return "", nil
+	}
+	/*
+		### :{icon}: [[{repo_name}]({repo_url})] Check `{check_run_name}` {conclusion}
+		---
+		[details]({check_run_details_url})
+	*/
+	res := fmt.Sprintf(
+		"### :%s: [[%s](%s)] Check `%s` %s\n\n---\n[details](%s)",
+		icon,
+		payload.Repository.Name, payload.Repository.URL,
+		payload.CheckRun.Name,
+		conclusion,
+		payload.CheckRun.HtmlURL)
+	return res, nil
+}
+
 func issuesHandler(payload github.IssuesPayload) (string, error) {
 	var icon string
 	switch payload.Action {
