@@ -20,13 +20,13 @@ func checkRunHandler(payload github.CheckRunPayload) (string, error) {
 	switch payload.CheckRun.Conclusion {
 	case "success":
 		icon = icons.CheckSuccess
-		conclusion = "success"
+		conclusion = "succeeded"
 	case "failure":
 		icon = icons.CheckFail
-		conclusion = "failure"
+		conclusion = "failed"
 	case "startup_failure":
 		icon = icons.CheckFail
-		conclusion = "startup failure"
+		conclusion = "startup failed"
 	case "timed_out":
 		icon = icons.CheckFail
 		conclusion = "timed out"
