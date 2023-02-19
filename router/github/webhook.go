@@ -13,6 +13,7 @@ func MakeMessage(c echo.Context, secret string) (string, error) {
 	hook, _ := github.New(options...)
 
 	payload, err := hook.Parse(c.Request(),
+		github.PingEvent,
 		github.CheckRunEvent,
 		github.IssuesEvent,
 		github.IssueCommentEvent,
