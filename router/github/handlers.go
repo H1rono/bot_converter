@@ -47,7 +47,7 @@ func checkRunHandler(payload github.CheckRunPayload) (string, error) {
 	res := fmt.Sprintf(
 		"### :%s: [[%s](%s)] Check `%s` %s\n\n---\n[details](%s)",
 		icon,
-		payload.Repository.Name, payload.Repository.URL,
+		payload.Repository.Name, removeHttps(payload.Repository.URL),
 		payload.CheckRun.Name,
 		conclusion,
 		payload.CheckRun.HtmlURL)
@@ -102,7 +102,7 @@ func issuesHandler(payload github.IssuesPayload) (string, error) {
 		m.WriteString(fmt.Sprintf(
 			"### :%s: [[%s](%s)] Issue %s %s to `%s` by `%s`\n",
 			icon,
-			payload.Repository.Name, payload.Repository.HTMLURL,
+			payload.Repository.Name, removeHttps(payload.Repository.HTMLURL),
 			issueName,
 			strings.Title(payload.Action),
 			payload.Assignee.Login,
@@ -111,7 +111,7 @@ func issuesHandler(payload github.IssuesPayload) (string, error) {
 		m.WriteString(fmt.Sprintf(
 			"### :%s: [[%s](%s)] Issue %s %s by `%s`\n",
 			icon,
-			payload.Repository.Name, payload.Repository.HTMLURL,
+			payload.Repository.Name, removeHttps(payload.Repository.HTMLURL),
 			issueName,
 			strings.Title(payload.Action),
 			payload.Sender.Login))
@@ -155,7 +155,7 @@ func issueCommentHandler(payload github.IssueCommentPayload) (string, error) {
 		"### :%s: [[%s](%s)] [Comment](%s) %s by `%s`\n"+
 			"%s\n",
 		icon,
-		payload.Repository.Name, payload.Repository.HTMLURL,
+		payload.Repository.Name, removeHttps(payload.Repository.HTMLURL),
 		payload.Comment.HTMLURL,
 		strings.Title(payload.Action),
 		payload.Sender.Login,
@@ -189,7 +189,7 @@ func pushHandler(payload github.PushPayload) (string, error) {
 	m.WriteString(fmt.Sprintf(
 		"### :%s: [[%s](%s)] %v New",
 		icons.Pushed,
-		payload.Repository.Name, payload.Repository.HTMLURL,
+		payload.Repository.Name, removeHttps(payload.Repository.HTMLURL),
 		len(payload.Commits)))
 
 	if len(payload.Commits) == 1 {
@@ -275,7 +275,7 @@ func pullRequestHandler(payload github.PullRequestPayload) (string, error) {
 		m.WriteString(fmt.Sprintf(
 			"### :%s: [[%s](%s)] Pull Request %s %s to `%s` by `%s`\n",
 			icon,
-			payload.Repository.Name, payload.Repository.HTMLURL,
+			payload.Repository.Name, removeHttps(payload.Repository.HTMLURL),
 			prName,
 			strings.Title(action),
 			payload.Assignee.Login,
@@ -284,7 +284,7 @@ func pullRequestHandler(payload github.PullRequestPayload) (string, error) {
 		m.WriteString(fmt.Sprintf(
 			"### :%s: [[%s](%s)] Pull Request %s %s to `%s` by `%s`\n",
 			icon,
-			payload.Repository.Name, payload.Repository.HTMLURL,
+			payload.Repository.Name, removeHttps(payload.Repository.HTMLURL),
 			prName,
 			strings.Title(action),
 			payload.RequestedReviewer.Login,
@@ -293,7 +293,7 @@ func pullRequestHandler(payload github.PullRequestPayload) (string, error) {
 		m.WriteString(fmt.Sprintf(
 			"### :%s: [[%s](%s)] Pull Request %s %s by `%s`\n",
 			icon,
-			payload.Repository.Name, payload.Repository.HTMLURL,
+			payload.Repository.Name, removeHttps(payload.Repository.HTMLURL),
 			prName,
 			strings.Title(action),
 			payload.Sender.Login))
@@ -350,7 +350,7 @@ func pullRequestReviewHandler(payload github.PullRequestReviewPayload) (string, 
 	m.WriteString(fmt.Sprintf(
 		"### :%s: [[%s](%s)] Pull Request %s %s by `%s`\n",
 		icon,
-		payload.Repository.Name, payload.Repository.HTMLURL,
+		payload.Repository.Name, removeHttps(payload.Repository.HTMLURL),
 		prName,
 		strings.Title(action),
 		payload.Sender.Login))
@@ -386,7 +386,7 @@ func pullRequestReviewCommentHandler(payload github.PullRequestReviewCommentPayl
 		"### :%s: [[%s](%s)] [Review Comment](%s) %s by `%s`\n"+
 			"%s\n",
 		icon,
-		payload.Repository.Name, payload.Repository.HTMLURL,
+		payload.Repository.Name, removeHttps(payload.Repository.HTMLURL),
 		payload.Comment.HTMLURL,
 		strings.Title(payload.Action),
 		payload.Sender.Login,

@@ -109,3 +109,7 @@ func getLabelNames(payload interface{}) (ret string) {
 	}
 	return strings.Join(formatted, ", ")
 }
+
+func removeHttps(url string) string {
+	return strings.TrimPrefix(url, "https:")
+}
