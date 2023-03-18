@@ -47,7 +47,7 @@ func checkRunHandler(payload github.CheckRunPayload) (string, error) {
 	res := fmt.Sprintf(
 		"### :%s: [[%s](%s)] Check `%s` %s\n\n---\n[details](%s)",
 		icon,
-		payload.Repository.Name, removeHttps(payload.Repository.URL),
+		payload.Repository.Name, removeHttps(payload.Repository.HTMLURL),
 		payload.CheckRun.Name,
 		conclusion,
 		payload.CheckRun.HtmlURL)
