@@ -64,6 +64,10 @@ func create() *command {
 			if channelID == uuid.Nil {
 				return reply("internal error: failed to get channel id")
 			}
+			channelPath, err := h.getChannelPath(channelID.String())
+			if err != nil {
+				return reply("internal error: failed to get channel path")
+			}
 
 			// has secret
 			var secret string
@@ -85,7 +89,7 @@ func create() *command {
 			}
 
 			// reply in DM
-			_, err = h.postDirectMessage(creatorID.String(), fmt.Sprintf("Converterを作成しました。\n"+
+			_, err = h.postDirectMessage(creatorID.String(), fmt.Sprintf("チャンネル #%s にConverterを作成しました。\n"+
 				"Webhookの宛先を以下のURLに設定してください。\n"+
 				"シークレットを指定した場合は、Webhookのシークレットをその値に設定してください。\n"+
 				"\n"+
@@ -97,6 +101,7 @@ func create() *command {
 				"ここに列挙されていないサービスへの対応を望む場合は、BOT製作者に連絡してください。\n"+
 				"\n"+
 				"また、このconverterを削除する場合は `/delete %s` を実行してください。",
+				channelPath,
 				h.origin, c.ID,
 				h.origin, c.ID,
 				c.ID))
