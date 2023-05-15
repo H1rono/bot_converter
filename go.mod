@@ -5,12 +5,12 @@ go 1.18
 require (
 	github.com/antihax/optional v1.0.0
 	github.com/go-gormigrate/gormigrate/v2 v2.0.0
+	github.com/go-playground/webhooks/v6 v6.0.1
 	github.com/gofrs/uuid v4.2.0+incompatible
 	github.com/labstack/echo/v4 v4.7.0
 	github.com/sapphi-red/go-traq v0.0.0-20210619185243-f487eb63bd8c
 	github.com/spf13/viper v1.10.1
 	github.com/traPtitech/traq-ws-bot v1.0.3
-	gopkg.in/go-playground/webhooks.v5 v5.17.0
 	gorm.io/driver/mysql v1.3.2
 	gorm.io/gorm v1.23.2
 )

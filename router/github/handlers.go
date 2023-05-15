@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"gopkg.in/go-playground/webhooks.v5/github"
+	"github.com/go-playground/webhooks/v6/github"
 
 	"git.trap.jp/toki/bot_converter/router/github/icons"
 )
@@ -50,7 +50,7 @@ func checkRunHandler(payload github.CheckRunPayload) (string, error) {
 		payload.Repository.Name, removeHttps(payload.Repository.HTMLURL),
 		payload.CheckRun.Name,
 		conclusion,
-		payload.CheckRun.HtmlURL)
+		payload.CheckRun.HTMLURL)
 	return res, nil
 }
 

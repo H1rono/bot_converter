@@ -4,7 +4,7 @@ import (
 	"strings"
 	"time"
 
-	"gopkg.in/go-playground/webhooks.v5/github"
+	"github.com/go-playground/webhooks/v6/github"
 )
 
 func formatTime(from string, format string) (string, error) {
@@ -72,7 +72,7 @@ func getRequestedReviewers(payload github.PullRequestPayload) string {
 }
 
 func getLabelNames(payload interface{}) (ret string) {
-	// gopkg.in/go-playground/webhooks.v5/github/payload.go
+	// github.com/go-playground/webhooks/v6/github/payload.go
 	var labels []struct {
 		ID          int64  `json:"id"`
 		NodeID      string `json:"node_id"`
@@ -82,15 +82,12 @@ func getLabelNames(payload interface{}) (ret string) {
 		Color       string `json:"color"`
 		Default     bool   `json:"default"`
 	}
-	switch payload.(type) {
+	switch payload := payload.(type) {
 	case github.IssuesPayload:
-		payload := payload.(github.IssuesPayload)
 		labels = payload.Issue.Labels
 	case github.IssueCommentPayload:
-		payload := payload.(github.IssueCommentPayload)
 		labels = payload.Issue.Labels
 	case github.PullRequestPayload:
-		payload := payload.(github.PullRequestPayload)
 		labels = payload.PullRequest.Labels
 	// case github.PullRequestReviewPayload:
 	// case github.PullRequestReviewCommentPayload:

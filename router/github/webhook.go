@@ -1,8 +1,8 @@
 package github
 
 import (
+	"github.com/go-playground/webhooks/v6/github"
 	"github.com/labstack/echo/v4"
-	"gopkg.in/go-playground/webhooks.v5/github"
 )
 
 func MakeMessage(c echo.Context, secret string) (string, error) {
