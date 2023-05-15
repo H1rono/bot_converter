@@ -25,27 +25,20 @@ func MakeMessage(c echo.Context, secret string) (string, error) {
 		return "", err
 	}
 
-	switch payload.(type) {
+	switch payload := payload.(type) {
 	case github.CheckRunPayload:
-		payload := payload.(github.CheckRunPayload)
 		return checkRunHandler(payload)
 	case github.IssuesPayload:
-		payload := payload.(github.IssuesPayload)
 		return issuesHandler(payload)
 	case github.IssueCommentPayload:
-		payload := payload.(github.IssueCommentPayload)
 		return issueCommentHandler(payload)
 	case github.PushPayload:
-		payload := payload.(github.PushPayload)
 		return pushHandler(payload)
 	case github.PullRequestPayload:
-		payload := payload.(github.PullRequestPayload)
 		return pullRequestHandler(payload)
 	case github.PullRequestReviewPayload:
-		payload := payload.(github.PullRequestReviewPayload)
 		return pullRequestReviewHandler(payload)
 	case github.PullRequestReviewCommentPayload:
-		payload := payload.(github.PullRequestReviewCommentPayload)
 		return pullRequestReviewCommentHandler(payload)
 	default:
 		return "", nil
