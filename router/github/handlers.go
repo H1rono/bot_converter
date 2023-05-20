@@ -5,9 +5,13 @@ import (
 	"strings"
 
 	"github.com/go-playground/webhooks/v6/github"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 
 	"git.trap.jp/toki/bot_converter/router/github/icons"
 )
+
+var titleCaser = cases.Title(language.English)
 
 func checkRunHandler(payload github.CheckRunPayload) (string, error) {
 	if payload.Action != "completed" {
@@ -104,7 +108,7 @@ func issuesHandler(payload github.IssuesPayload) (string, error) {
 			icon,
 			payload.Repository.Name, removeHttps(payload.Repository.HTMLURL),
 			issueName,
-			strings.Title(payload.Action),
+			titleCaser.String(payload.Action),
 			payload.Assignee.Login,
 			payload.Sender.Login))
 	default:
@@ -113,7 +117,7 @@ func issuesHandler(payload github.IssuesPayload) (string, error) {
 			icon,
 			payload.Repository.Name, removeHttps(payload.Repository.HTMLURL),
 			issueName,
-			strings.Title(payload.Action),
+			titleCaser.String(payload.Action),
 			payload.Sender.Login))
 	}
 
@@ -157,7 +161,7 @@ func issueCommentHandler(payload github.IssueCommentPayload) (string, error) {
 		icon,
 		payload.Repository.Name, removeHttps(payload.Repository.HTMLURL),
 		payload.Comment.HTMLURL,
-		strings.Title(payload.Action),
+		titleCaser.String(payload.Action),
 		payload.Sender.Login,
 		issueName))
 
@@ -304,7 +308,7 @@ func pullRequestHandler(payload github.PullRequestPayload) (string, error) {
 			icon,
 			payload.Repository.Name, removeHttps(payload.Repository.HTMLURL),
 			prName,
-			strings.Title(action),
+			titleCaser.String(action),
 			payload.Assignee.Login,
 			payload.Sender.Login))
 	case "review_requested":
@@ -313,7 +317,7 @@ func pullRequestHandler(payload github.PullRequestPayload) (string, error) {
 			icon,
 			payload.Repository.Name, removeHttps(payload.Repository.HTMLURL),
 			prName,
-			strings.Title(action),
+			titleCaser.String(action),
 			payload.RequestedReviewer.Login,
 			payload.Sender.Login))
 	default:
@@ -322,7 +326,7 @@ func pullRequestHandler(payload github.PullRequestPayload) (string, error) {
 			icon,
 			payload.Repository.Name, removeHttps(payload.Repository.HTMLURL),
 			prName,
-			strings.Title(action),
+			titleCaser.String(action),
 			payload.Sender.Login))
 	}
 
@@ -379,7 +383,7 @@ func pullRequestReviewHandler(payload github.PullRequestReviewPayload) (string, 
 		icon,
 		payload.Repository.Name, removeHttps(payload.Repository.HTMLURL),
 		prName,
-		strings.Title(action),
+		titleCaser.String(action),
 		payload.Sender.Login))
 
 	if assignees := getAssigneeNames(payload); assignees != "" {
@@ -415,7 +419,7 @@ func pullRequestReviewCommentHandler(payload github.PullRequestReviewCommentPayl
 		icon,
 		payload.Repository.Name, removeHttps(payload.Repository.HTMLURL),
 		payload.Comment.HTMLURL,
-		strings.Title(payload.Action),
+		titleCaser.String(payload.Action),
 		payload.Sender.Login,
 		prName))
 
