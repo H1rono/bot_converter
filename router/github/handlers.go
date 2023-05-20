@@ -220,6 +220,33 @@ func pushHandler(payload github.PushPayload) (string, error) {
 	return m.String(), nil
 }
 
+func releaseHandler(payload github.ReleasePayload) (string, error) {
+	var m strings.Builder
+	releaseType := "Release"
+	if payload.Release.Prerelease {
+		releaseType = "Prerelease"
+	}
+	var releaseName string
+	if payload.Release.Name != nil {
+		releaseName = " " + *payload.Release.Name
+	}
+	m.WriteString(fmt.Sprintf(
+		"### :%s: [[%s](%s)] New %s%s by %s\n",
+		icons.Tag,
+		payload.Repository.Name, removeHttps(payload.Repository.HTMLURL),
+		releaseType, releaseName,
+		payload.Release.Author.Login))
+
+	m.WriteString(fmt.Sprintf("Tag: %s", payload.Release.TagName))
+
+	if payload.Release.Body != nil {
+		m.WriteString("\n---\n")
+		m.WriteString(*payload.Release.Body)
+	}
+
+	return m.String(), nil
+}
+
 func pullRequestHandler(payload github.PullRequestPayload) (string, error) {
 	// If action == "closed" and Merged is true, then the pull request was merged
 	action := payload.Action

@@ -18,6 +18,7 @@ func MakeMessage(c echo.Context, secret string) (string, error) {
 		github.IssuesEvent,
 		github.IssueCommentEvent,
 		github.PushEvent,
+		github.ReleaseEvent,
 		github.PullRequestEvent,
 		github.PullRequestReviewEvent,
 		github.PullRequestReviewCommentEvent)
@@ -34,6 +35,8 @@ func MakeMessage(c echo.Context, secret string) (string, error) {
 		return issueCommentHandler(payload)
 	case github.PushPayload:
 		return pushHandler(payload)
+	case github.ReleasePayload:
+		return releaseHandler(payload)
 	case github.PullRequestPayload:
 		return pullRequestHandler(payload)
 	case github.PullRequestReviewPayload:
