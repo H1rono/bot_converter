@@ -241,7 +241,7 @@ func releaseHandler(payload github.ReleasePayload) (string, error) {
 		releaseType, releaseName,
 		payload.Release.Author.Login))
 
-	m.WriteString(fmt.Sprintf("Tag: %s", payload.Release.TagName))
+	m.WriteString(fmt.Sprintf("Tag: %s\n", payload.Release.TagName))
 
 	if payload.Release.Body != nil {
 		m.WriteString("\n---\n")
