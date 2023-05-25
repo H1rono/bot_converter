@@ -107,6 +107,7 @@ func getLabelNames(payload interface{}) (ret string) {
 	return strings.Join(formatted, ", ")
 }
 
-func removeHttps(url string) string {
+// rmOGP removes OGP display in traQ UI.
+func rmOGP(url string) string {
 	return strings.TrimPrefix(url, "https:")
 }

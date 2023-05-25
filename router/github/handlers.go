@@ -51,10 +51,10 @@ func checkRunHandler(payload github.CheckRunPayload) (string, error) {
 	res := fmt.Sprintf(
 		"### :%s: [[%s](%s)] Check `%s` %s\n\n---\n[details](%s)",
 		icon,
-		payload.Repository.Name, removeHttps(payload.Repository.HTMLURL),
+		payload.Repository.Name, rmOGP(payload.Repository.HTMLURL),
 		payload.CheckRun.Name,
 		conclusion,
-		payload.CheckRun.HTMLURL)
+		rmOGP(payload.CheckRun.HTMLURL))
 	return res, nil
 }
 
@@ -97,7 +97,7 @@ func issuesHandler(payload github.IssuesPayload) (string, error) {
 		return "", nil
 	}
 
-	issueName := fmt.Sprintf("[#%d %s](%s)", payload.Issue.Number, payload.Issue.Title, payload.Issue.HTMLURL)
+	issueName := fmt.Sprintf("[#%d %s](%s)", payload.Issue.Number, payload.Issue.Title, rmOGP(payload.Issue.HTMLURL))
 	var m strings.Builder
 	switch payload.Action {
 	case "assigned":
@@ -106,7 +106,7 @@ func issuesHandler(payload github.IssuesPayload) (string, error) {
 		m.WriteString(fmt.Sprintf(
 			"### :%s: [[%s](%s)] Issue %s %s to `%s` by `%s`\n",
 			icon,
-			payload.Repository.Name, removeHttps(payload.Repository.HTMLURL),
+			payload.Repository.Name, rmOGP(payload.Repository.HTMLURL),
 			issueName,
 			titleCaser.String(payload.Action),
 			payload.Assignee.Login,
@@ -115,7 +115,7 @@ func issuesHandler(payload github.IssuesPayload) (string, error) {
 		m.WriteString(fmt.Sprintf(
 			"### :%s: [[%s](%s)] Issue %s %s by `%s`\n",
 			icon,
-			payload.Repository.Name, removeHttps(payload.Repository.HTMLURL),
+			payload.Repository.Name, rmOGP(payload.Repository.HTMLURL),
 			issueName,
 			titleCaser.String(payload.Action),
 			payload.Sender.Login))
@@ -153,14 +153,14 @@ func issueCommentHandler(payload github.IssueCommentPayload) (string, error) {
 		return "", nil
 	}
 
-	issueName := fmt.Sprintf("[#%d %s](%s)", payload.Issue.Number, payload.Issue.Title, payload.Issue.HTMLURL)
+	issueName := fmt.Sprintf("[#%d %s](%s)", payload.Issue.Number, payload.Issue.Title, rmOGP(payload.Issue.HTMLURL))
 	var m strings.Builder
 	m.WriteString(fmt.Sprintf(
 		"### :%s: [[%s](%s)] [Comment](%s) %s by `%s`\n"+
 			"%s\n",
 		icon,
-		payload.Repository.Name, removeHttps(payload.Repository.HTMLURL),
-		payload.Comment.HTMLURL,
+		payload.Repository.Name, rmOGP(payload.Repository.HTMLURL),
+		rmOGP(payload.Comment.HTMLURL),
 		titleCaser.String(payload.Action),
 		payload.Sender.Login,
 		issueName))
@@ -193,7 +193,7 @@ func pushHandler(payload github.PushPayload) (string, error) {
 	m.WriteString(fmt.Sprintf(
 		"### :%s: [[%s](%s)] %v New",
 		icons.Pushed,
-		payload.Repository.Name, removeHttps(payload.Repository.HTMLURL),
+		payload.Repository.Name, rmOGP(payload.Repository.HTMLURL),
 		len(payload.Commits)))
 
 	if len(payload.Commits) == 1 {
@@ -215,7 +215,7 @@ func pushHandler(payload github.PushPayload) (string, error) {
 		m.WriteString(fmt.Sprintf(
 			":0x%s: [`%s`](%s) : %s - `%s` @ %s\n",
 			commit.ID[:6], commit.ID[:6],
-			commit.URL,
+			rmOGP(commit.URL),
 			commit.Message,
 			commit.Author.Name,
 			formattedTime))
@@ -237,7 +237,7 @@ func releaseHandler(payload github.ReleasePayload) (string, error) {
 	m.WriteString(fmt.Sprintf(
 		"### :%s: [[%s](%s)] New %s%s by %s\n",
 		icons.Tag,
-		payload.Repository.Name, removeHttps(payload.Repository.HTMLURL),
+		payload.Repository.Name, rmOGP(payload.Repository.HTMLURL),
 		releaseType, releaseName,
 		payload.Release.Author.Login))
 
@@ -296,7 +296,7 @@ func pullRequestHandler(payload github.PullRequestPayload) (string, error) {
 		return "", nil
 	}
 
-	prName := fmt.Sprintf("[#%d %s](%s)", payload.PullRequest.Number, payload.PullRequest.Title, payload.PullRequest.HTMLURL)
+	prName := fmt.Sprintf("[#%d %s](%s)", payload.PullRequest.Number, payload.PullRequest.Title, rmOGP(payload.PullRequest.HTMLURL))
 
 	var m strings.Builder
 	switch payload.Action {
@@ -306,7 +306,7 @@ func pullRequestHandler(payload github.PullRequestPayload) (string, error) {
 		m.WriteString(fmt.Sprintf(
 			"### :%s: [[%s](%s)] Pull Request %s %s to `%s` by `%s`\n",
 			icon,
-			payload.Repository.Name, removeHttps(payload.Repository.HTMLURL),
+			payload.Repository.Name, rmOGP(payload.Repository.HTMLURL),
 			prName,
 			titleCaser.String(action),
 			payload.Assignee.Login,
@@ -315,7 +315,7 @@ func pullRequestHandler(payload github.PullRequestPayload) (string, error) {
 		m.WriteString(fmt.Sprintf(
 			"### :%s: [[%s](%s)] Pull Request %s %s to `%s` by `%s`\n",
 			icon,
-			payload.Repository.Name, removeHttps(payload.Repository.HTMLURL),
+			payload.Repository.Name, rmOGP(payload.Repository.HTMLURL),
 			prName,
 			titleCaser.String(action),
 			payload.RequestedReviewer.Login,
@@ -324,7 +324,7 @@ func pullRequestHandler(payload github.PullRequestPayload) (string, error) {
 		m.WriteString(fmt.Sprintf(
 			"### :%s: [[%s](%s)] Pull Request %s %s by `%s`\n",
 			icon,
-			payload.Repository.Name, removeHttps(payload.Repository.HTMLURL),
+			payload.Repository.Name, rmOGP(payload.Repository.HTMLURL),
 			prName,
 			titleCaser.String(action),
 			payload.Sender.Login))
@@ -376,12 +376,12 @@ func pullRequestReviewHandler(payload github.PullRequestReviewPayload) (string, 
 		return "", nil
 	}
 
-	prName := fmt.Sprintf("[#%d %s](%s)", payload.PullRequest.Number, payload.PullRequest.Title, payload.PullRequest.HTMLURL)
+	prName := fmt.Sprintf("[#%d %s](%s)", payload.PullRequest.Number, payload.PullRequest.Title, rmOGP(payload.PullRequest.HTMLURL))
 	var m strings.Builder
 	m.WriteString(fmt.Sprintf(
 		"### :%s: [[%s](%s)] Pull Request %s %s by `%s`\n",
 		icon,
-		payload.Repository.Name, removeHttps(payload.Repository.HTMLURL),
+		payload.Repository.Name, rmOGP(payload.Repository.HTMLURL),
 		prName,
 		titleCaser.String(action),
 		payload.Sender.Login))
@@ -411,14 +411,14 @@ func pullRequestReviewCommentHandler(payload github.PullRequestReviewCommentPayl
 		return "", nil
 	}
 
-	prName := fmt.Sprintf("[#%d %s](%s)", payload.PullRequest.Number, payload.PullRequest.Title, payload.PullRequest.HTMLURL)
+	prName := fmt.Sprintf("[#%d %s](%s)", payload.PullRequest.Number, payload.PullRequest.Title, rmOGP(payload.PullRequest.HTMLURL))
 	var m strings.Builder
 	m.WriteString(fmt.Sprintf(
 		"### :%s: [[%s](%s)] [Review Comment](%s) %s by `%s`\n"+
 			"%s\n",
 		icon,
-		payload.Repository.Name, removeHttps(payload.Repository.HTMLURL),
-		payload.Comment.HTMLURL,
+		payload.Repository.Name, rmOGP(payload.Repository.HTMLURL),
+		rmOGP(payload.Comment.HTMLURL),
 		titleCaser.String(payload.Action),
 		payload.Sender.Login,
 		prName))
