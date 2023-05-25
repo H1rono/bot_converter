@@ -225,6 +225,10 @@ func pushHandler(payload github.PushPayload) (string, error) {
 }
 
 func releaseHandler(payload github.ReleasePayload) (string, error) {
+	if payload.Action != "published" {
+		return "", nil
+	}
+
 	var m strings.Builder
 	releaseType := "Release"
 	if payload.Release.Prerelease {
@@ -235,10 +239,10 @@ func releaseHandler(payload github.ReleasePayload) (string, error) {
 		releaseName = " " + *payload.Release.Name
 	}
 	m.WriteString(fmt.Sprintf(
-		"### :%s: [[%s](%s)] New %s%s by %s\n",
+		"### :%s: [[%s](%s)] %s%s %s by %s\n",
 		icons.Tag,
 		payload.Repository.Name, rmOGP(payload.Repository.HTMLURL),
-		releaseType, releaseName,
+		releaseType, releaseName, titleCaser.String(payload.Action),
 		payload.Release.Author.Login))
 
 	m.WriteString(fmt.Sprintf("Tag: %s\n", payload.Release.TagName))
