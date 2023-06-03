@@ -10,7 +10,7 @@ func (h *Handlers) getChannelPath(channelID string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	if !c.ParentId.IsSet() {
+	if !c.ParentId.IsSet() || c.ParentId.Get() == nil {
 		return c.Name, nil
 	}
 	p, err := h.getChannelPath(*c.ParentId.Get())
