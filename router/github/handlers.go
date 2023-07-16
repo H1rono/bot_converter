@@ -132,9 +132,12 @@ func issuesHandler(payload github.IssuesPayload) (string, error) {
 		m.WriteString("\n")
 	}
 
-	if payload.Action == "opened" || payload.Action == "edited" {
-		m.WriteString("\n---\n")
-		m.WriteString(payload.Issue.Body)
+	hideBody := strings.Contains(payload.Sender.Login, "[bot]")
+	if !hideBody {
+		if payload.Action == "opened" || payload.Action == "edited" {
+			m.WriteString("\n---\n")
+			m.WriteString(payload.Issue.Body)
+		}
 	}
 
 	return m.String(), nil
@@ -176,9 +179,12 @@ func issueCommentHandler(payload github.IssueCommentPayload) (string, error) {
 		m.WriteString("\n")
 	}
 
-	if payload.Action == "created" || payload.Action == "edited" {
-		m.WriteString("\n---\n")
-		m.WriteString(payload.Comment.Body)
+	hideBody := strings.Contains(payload.Sender.Login, "[bot]")
+	if !hideBody {
+		if payload.Action == "created" || payload.Action == "edited" {
+			m.WriteString("\n---\n")
+			m.WriteString(payload.Comment.Body)
+		}
 	}
 
 	return m.String(), nil
@@ -350,10 +356,13 @@ func pullRequestHandler(payload github.PullRequestPayload) (string, error) {
 		m.WriteString("\n")
 	}
 
-	// send pull request body only on the first open or on edited
-	if payload.Action == "opened" || payload.Action == "edited" {
-		m.WriteString("\n---\n")
-		m.WriteString(payload.PullRequest.Body)
+	hideBody := strings.Contains(payload.Sender.Login, "[bot]")
+	if !hideBody {
+		// send pull request body only on the first open or on edited
+		if payload.Action == "opened" || payload.Action == "edited" {
+			m.WriteString("\n---\n")
+			m.WriteString(payload.PullRequest.Body)
+		}
 	}
 
 	return m.String(), nil
@@ -396,8 +405,11 @@ func pullRequestReviewHandler(payload github.PullRequestReviewPayload) (string, 
 		m.WriteString("\n")
 	}
 
-	m.WriteString("\n---\n")
-	m.WriteString(payload.Review.Body)
+	hideBody := strings.Contains(payload.Sender.Login, "[bot]")
+	if !hideBody {
+		m.WriteString("\n---\n")
+		m.WriteString(payload.Review.Body)
+	}
 
 	return m.String(), nil
 }
@@ -433,8 +445,11 @@ func pullRequestReviewCommentHandler(payload github.PullRequestReviewCommentPayl
 		m.WriteString("\n")
 	}
 
-	m.WriteString("\n---\n")
-	m.WriteString(payload.Comment.Body)
+	hideBody := strings.Contains(payload.Sender.Login, "[bot]")
+	if !hideBody {
+		m.WriteString("\n---\n")
+		m.WriteString(payload.Comment.Body)
+	}
 
 	return m.String(), nil
 }
