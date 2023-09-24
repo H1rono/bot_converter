@@ -43,18 +43,14 @@ func checkRunHandler(payload github.CheckRunPayload) (string, error) {
 	default:
 		return "", nil
 	}
-	/*
-		### :{icon}: [[{repo_name}]({repo_url})] Check `{check_run_name}` {conclusion}
-		---
-		[details]({check_run_details_url})
-	*/
 	res := fmt.Sprintf(
-		"### :%s: [[%s](%s)] Check `%s` %s\n\n---\n[details](%s)",
+		"### :%s: [[%s](%s)] Check [%s](%s) %s",
 		icon,
 		payload.Repository.Name, rmOGP(payload.Repository.HTMLURL),
 		payload.CheckRun.Name,
+		rmOGP(payload.CheckRun.HTMLURL),
 		conclusion,
-		rmOGP(payload.CheckRun.HTMLURL))
+	)
 	return res, nil
 }
 
