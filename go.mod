@@ -9,6 +9,7 @@ require (
 	github.com/go-playground/webhooks/v6 v6.3.0
 	github.com/gofrs/uuid v4.4.0+incompatible
 	github.com/labstack/echo/v4 v4.11.2
+	github.com/motoki317/sc v1.6.0
 	github.com/sapphi-red/go-traq v0.0.0-20220321193749-04187944427c
 	github.com/spf13/viper v1.17.0
 	github.com/traPtitech/traq-ws-bot v1.1.2

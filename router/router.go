@@ -2,7 +2,9 @@ package router
 
 import (
 	"context"
+	"github.com/motoki317/sc"
 	"net/http"
+	"time"
 
 	"github.com/labstack/echo/v4"
 	"github.com/sapphi-red/go-traq"
@@ -15,6 +17,8 @@ type Handlers struct {
 	api         *traq.APIClient
 	auth        context.Context
 	accessToken string
+
+	throttle *sc.Cache[postMessageArgs, *traq.Message]
 }
 
 func SetUp(c Config, e *echo.Echo, repo repository.Repository) {
@@ -27,6 +31,8 @@ func SetUp(c Config, e *echo.Echo, repo repository.Repository) {
 		auth:        auth,
 		accessToken: c.AccessToken,
 	}
+
+	h.throttle = sc.NewMust(h._postMessage, 5*time.Second, 5*time.Second, sc.WithCleanupInterval(1*time.Minute))
 
 	retrieveCID := retrieveConverterID(h)
 
