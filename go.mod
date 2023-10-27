@@ -1,9 +1,10 @@
 module git.trap.jp/toki/bot_converter
 
-go 1.18
+go 1.21
+
+toolchain go1.21.3
 
 require (
-	github.com/antihax/optional v1.0.0
 	github.com/go-gormigrate/gormigrate/v2 v2.0.2
 	github.com/go-playground/webhooks/v6 v6.0.1
 	github.com/gofrs/uuid v4.4.0+incompatible
@@ -11,6 +12,7 @@ require (
 	github.com/sapphi-red/go-traq v0.0.0-20220321193749-04187944427c
 	github.com/spf13/viper v1.15.0
 	github.com/traPtitech/traq-ws-bot v1.1.2
+	golang.org/x/text v0.9.0
 	gorm.io/driver/mysql v1.5.0
 	gorm.io/gorm v1.25.1
 )
@@ -41,7 +43,6 @@ require (
 	golang.org/x/net v0.10.0 // indirect
 	golang.org/x/oauth2 v0.8.0 // indirect
 	golang.org/x/sys v0.8.0 // indirect
-	golang.org/x/text v0.9.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/protobuf v1.30.0 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
