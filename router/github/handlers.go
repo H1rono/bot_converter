@@ -207,20 +207,23 @@ func pushHandler(payload github.PushPayload) (string, error) {
 		" to `%s` by `%s`\n",
 		payload.Ref,
 		payload.Sender.Login))
-	m.WriteString("\n---\n")
 
-	for _, commit := range payload.Commits {
-		formattedTime, err := formatTime(commit.Timestamp, "2006/01/02 15:04:05")
-		if err != nil {
-			return "", err
+	hideBody := strings.Contains(payload.Sender.Login, "[bot]")
+	if !hideBody {
+		m.WriteString("\n---\n")
+		for _, commit := range payload.Commits {
+			formattedTime, err := formatTime(commit.Timestamp, "2006/01/02 15:04:05")
+			if err != nil {
+				return "", err
+			}
+			m.WriteString(fmt.Sprintf(
+				":0x%s: [`%s`](%s) : %s - `%s` @ %s\n",
+				commit.ID[:6], commit.ID[:6],
+				rmOGP(commit.URL),
+				commit.Message,
+				commit.Author.Name,
+				formattedTime))
 		}
-		m.WriteString(fmt.Sprintf(
-			":0x%s: [`%s`](%s) : %s - `%s` @ %s\n",
-			commit.ID[:6], commit.ID[:6],
-			rmOGP(commit.URL),
-			commit.Message,
-			commit.Author.Name,
-			formattedTime))
 	}
 
 	return m.String(), nil
