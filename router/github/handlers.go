@@ -9,11 +9,12 @@ import (
 	"golang.org/x/text/language"
 
 	"git.trap.jp/toki/bot_converter/router/github/icons"
+	"git.trap.jp/toki/bot_converter/utils"
 )
 
 var titleCaser = cases.Title(language.English)
 
-func checkRunHandler(payload github.CheckRunPayload) (string, error) {
+func (c *converter) checkRunHandler(payload github.CheckRunPayload) (string, error) {
 	if payload.Action != "completed" {
 		return "", nil
 	}
@@ -54,7 +55,7 @@ func checkRunHandler(payload github.CheckRunPayload) (string, error) {
 	return res, nil
 }
 
-func issuesHandler(payload github.IssuesPayload) (string, error) {
+func (c *converter) issuesHandler(payload github.IssuesPayload) (string, error) {
 	var icon string
 	switch payload.Action {
 	case "opened":
@@ -139,7 +140,7 @@ func issuesHandler(payload github.IssuesPayload) (string, error) {
 	return m.String(), nil
 }
 
-func issueCommentHandler(payload github.IssueCommentPayload) (string, error) {
+func (c *converter) issueCommentHandler(payload github.IssueCommentPayload) (string, error) {
 	var icon string
 	switch payload.Action {
 	case "created":
@@ -186,8 +187,18 @@ func issueCommentHandler(payload github.IssueCommentPayload) (string, error) {
 	return m.String(), nil
 }
 
-func pushHandler(payload github.PushPayload) (string, error) {
+func (c *converter) canProcessPush(payload github.PushPayload) bool {
+	if len(c.config.PushBranchFilter) == 0 {
+		return true
+	}
+	return utils.FilterByRegexp(c.config.PushBranchFilter, payload.Ref)
+}
+
+func (c *converter) pushHandler(payload github.PushPayload) (string, error) {
 	if len(payload.Commits) == 0 {
+		return "", nil
+	}
+	if !c.canProcessPush(payload) {
 		return "", nil
 	}
 
@@ -226,7 +237,7 @@ func pushHandler(payload github.PushPayload) (string, error) {
 	return m.String(), nil
 }
 
-func releaseHandler(payload github.ReleasePayload) (string, error) {
+func (c *converter) releaseHandler(payload github.ReleasePayload) (string, error) {
 	if payload.Action != "published" {
 		return "", nil
 	}
@@ -257,7 +268,18 @@ func releaseHandler(payload github.ReleasePayload) (string, error) {
 	return m.String(), nil
 }
 
-func pullRequestHandler(payload github.PullRequestPayload) (string, error) {
+func (c *converter) canProcessPR(payload github.PullRequestPayload) bool {
+	if len(c.config.PREventTypesFilter) == 0 {
+		return true
+	}
+	return utils.FilterByRegexp(c.config.PREventTypesFilter, payload.Action)
+}
+
+func (c *converter) pullRequestHandler(payload github.PullRequestPayload) (string, error) {
+	if !c.canProcessPR(payload) {
+		return "", nil
+	}
+
 	// If action == "closed" and Merged is true, then the pull request was merged
 	action := payload.Action
 	var icon string
@@ -364,7 +386,7 @@ func pullRequestHandler(payload github.PullRequestPayload) (string, error) {
 	return m.String(), nil
 }
 
-func pullRequestReviewHandler(payload github.PullRequestReviewPayload) (string, error) {
+func (c *converter) pullRequestReviewHandler(payload github.PullRequestReviewPayload) (string, error) {
 	if payload.Action != "submitted" {
 		return "", nil
 	}
@@ -410,7 +432,7 @@ func pullRequestReviewHandler(payload github.PullRequestReviewPayload) (string, 
 	return m.String(), nil
 }
 
-func pullRequestReviewCommentHandler(payload github.PullRequestReviewCommentPayload) (string, error) {
+func (c *converter) pullRequestReviewCommentHandler(payload github.PullRequestReviewCommentPayload) (string, error) {
 	var icon string
 	switch payload.Action {
 	case "created":

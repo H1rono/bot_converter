@@ -1,16 +1,19 @@
 package router
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/gofrs/uuid"
 	"github.com/labstack/echo/v4"
 
+	"git.trap.jp/toki/bot_converter/model"
 	"git.trap.jp/toki/bot_converter/repository"
 )
 
 const (
-	converterKey = "converter"
+	converterKey       = "converter"
+	converterConfigKey = "converter_config"
 )
 
 func retrieveConverterID(h *Handlers) echo.MiddlewareFunc {
@@ -23,7 +26,7 @@ func retrieveConverterID(h *Handlers) echo.MiddlewareFunc {
 
 			converter, err := h.repo.GetConverter(cid)
 			if err != nil {
-				if err == repository.ErrNotFound {
+				if errors.Is(err, repository.ErrNotFound) {
 					return echo.NewHTTPError(http.StatusNotFound, "converter not found")
 				} else {
 					c.Logger().Error(err)
@@ -31,9 +34,27 @@ func retrieveConverterID(h *Handlers) echo.MiddlewareFunc {
 				}
 			}
 
+			config, err := h.repo.GetConverterConfig(cid)
+			if err != nil && !errors.Is(err, repository.ErrNotFound) {
+				c.Logger().Error(err)
+				return echo.NewHTTPError(http.StatusInternalServerError, "internal server error")
+			}
+			if errors.Is(err, repository.ErrNotFound) {
+				config = &model.Config{ConverterID: cid}
+			}
+
 			c.Set(converterKey, converter)
+			c.Set(converterConfigKey, config)
 
 			return next(c)
 		}
 	}
+}
+
+func getConverter(c echo.Context) *model.Converter {
+	return c.Get(converterKey).(*model.Converter)
+}
+
+func getConverterConfig(c echo.Context) *model.Config {
+	return c.Get(converterConfigKey).(*model.Config)
 }

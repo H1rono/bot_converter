@@ -3,16 +3,22 @@ package github
 import (
 	"github.com/go-playground/webhooks/v6/github"
 	"github.com/labstack/echo/v4"
+
+	"git.trap.jp/toki/bot_converter/model"
 )
 
-func MakeMessage(c echo.Context, secret string) (string, error) {
+type converter struct {
+	config *model.Config
+}
+
+func MakeMessage(ctx echo.Context, config *model.Config, secret string) (string, error) {
 	var options []github.Option
 	if len(secret) > 0 {
 		options = append(options, github.Options.Secret(secret))
 	}
 	hook, _ := github.New(options...)
 
-	payload, err := hook.Parse(c.Request(),
+	payload, err := hook.Parse(ctx.Request(),
 		github.PingEvent,
 		github.CheckRunEvent,
 		github.IssuesEvent,
@@ -26,23 +32,24 @@ func MakeMessage(c echo.Context, secret string) (string, error) {
 		return "", err
 	}
 
+	c := converter{config: config}
 	switch payload := payload.(type) {
 	case github.CheckRunPayload:
-		return checkRunHandler(payload)
+		return c.checkRunHandler(payload)
 	case github.IssuesPayload:
-		return issuesHandler(payload)
+		return c.issuesHandler(payload)
 	case github.IssueCommentPayload:
-		return issueCommentHandler(payload)
+		return c.issueCommentHandler(payload)
 	case github.PushPayload:
-		return pushHandler(payload)
+		return c.pushHandler(payload)
 	case github.ReleasePayload:
-		return releaseHandler(payload)
+		return c.releaseHandler(payload)
 	case github.PullRequestPayload:
-		return pullRequestHandler(payload)
+		return c.pullRequestHandler(payload)
 	case github.PullRequestReviewPayload:
-		return pullRequestReviewHandler(payload)
+		return c.pullRequestReviewHandler(payload)
 	case github.PullRequestReviewCommentPayload:
-		return pullRequestReviewCommentHandler(payload)
+		return c.pullRequestReviewCommentHandler(payload)
 	default:
 		return "", nil
 	}

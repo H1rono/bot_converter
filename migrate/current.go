@@ -10,6 +10,7 @@ import (
 func Migrations() []*gormigrate.Migration {
 	return []*gormigrate.Migration{
 		v1(), // v1 adds table converter.
+		v2(), // v2 adds table config.
 	}
 }
 
@@ -17,5 +18,6 @@ func Migrations() []*gormigrate.Migration {
 func AllTables() []interface{} {
 	return []interface{}{
 		&model.Converter{},
+		&model.Config{},
 	}
 }

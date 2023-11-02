@@ -13,6 +13,8 @@ type ConverterRepository interface {
 	CreateConverter(creatorID, channelID uuid.UUID, secret string) (*model.Converter, error)
 	// GetConverter Converterを取得します
 	GetConverter(id uuid.UUID) (*model.Converter, error)
+	// GetConverterConfig Converter Configを取得します
+	GetConverterConfig(id uuid.UUID) (*model.Config, error)
 	// GetConverterByCreatorID 指定されたユーザーによって作られたconverter全てを取得します。
 	GetConverterByCreatorID(creatorID uuid.UUID) ([]*model.Converter, error)
 	// DeleteConverter Converterを削除します

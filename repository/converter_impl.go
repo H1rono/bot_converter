@@ -47,6 +47,18 @@ func (repo *GormRepository) GetConverter(id uuid.UUID) (*model.Converter, error)
 	return &c, nil
 }
 
+func (repo *GormRepository) GetConverterConfig(id uuid.UUID) (*model.Config, error) {
+	if id == uuid.Nil {
+		return nil, ErrNilID
+	}
+
+	var c model.Config
+	if err := repo.db.Where(&model.Config{ConverterID: id}).First(&c).Error; err != nil {
+		return nil, convertError(err)
+	}
+	return &c, nil
+}
+
 func (repo *GormRepository) GetConverterByCreatorID(creatorID uuid.UUID) ([]*model.Converter, error) {
 	if creatorID == uuid.Nil {
 		return nil, ErrNilID
