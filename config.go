@@ -92,7 +92,7 @@ func initDB() (*gorm.DB, error) {
 	if err != nil {
 		return nil, err
 	}
-	db.Logger.LogMode(logger.Warn)
+	db.Logger.LogMode(logger.Silent)
 
 	if err := migrate.Migrate(db); err != nil {
 		return nil, err
