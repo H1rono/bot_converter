@@ -111,3 +111,12 @@ func getLabelNames(payload interface{}) (ret string) {
 func rmOGP(url string) string {
 	return strings.TrimPrefix(url, "https:")
 }
+
+// stripCommitMessage cuts off the string to first line.
+func stripCommitMessage(s string) string {
+	line, rest, _ := strings.Cut(s, "\n")
+	if rest != "" {
+		line += " [truncated]"
+	}
+	return line
+}
