@@ -48,7 +48,7 @@ func list() *command {
 				if err != nil {
 					return reply(fmt.Sprintf("internal error: %v", err))
 				}
-				sb.WriteString(fmt.Sprintf("- 投稿先チャンネル: %v\n", path))
+				sb.WriteString(fmt.Sprintf("- 投稿先チャンネル: #%v\n", path))
 				sb.WriteString("\n")
 			}
 
