@@ -37,12 +37,13 @@ func (h *Handlers) postConverterGitHub(c echo.Context) error {
 
 func (h *Handlers) postConverterGitea(c echo.Context) error {
 	converter := getConverter(c)
+	config := getConverterConfig(c)
 
 	var secret string
 	if converter.Secret.Valid {
 		secret = converter.Secret.String
 	}
-	msg, err := gitea.MakeMessage(c, secret)
+	msg, err := gitea.MakeMessage(c, config, secret)
 	if err != nil {
 		if errors.Is(err, gitea.ErrBadSignature) {
 			return echo.NewHTTPError(http.StatusUnauthorized, "bad signature")

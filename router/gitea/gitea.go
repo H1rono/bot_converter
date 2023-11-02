@@ -12,22 +12,29 @@ import (
 	"strings"
 
 	"github.com/labstack/echo/v4"
+
+	"git.trap.jp/toki/bot_converter/model"
+	"git.trap.jp/toki/bot_converter/utils"
 )
 
 var (
 	ErrBadSignature = errors.New("bad signature")
 )
 
-func MakeMessage(c echo.Context, secret string) (string, error) {
-	event := c.Request().Header.Get("X-Gitea-Event")
+type converter struct {
+	config *model.Config
+}
 
-	payload, err := io.ReadAll(c.Request().Body)
+func MakeMessage(ctx echo.Context, config *model.Config, secret string) (string, error) {
+	event := ctx.Request().Header.Get("X-Gitea-Event")
+
+	payload, err := io.ReadAll(ctx.Request().Body)
 	if err != nil {
 		return "", err
 	}
 
 	if len(secret) > 0 {
-		signature := c.Request().Header.Get("X-Hub-Signature")
+		signature := ctx.Request().Header.Get("X-Hub-Signature")
 		if len(signature) == 0 {
 			return "", ErrBadSignature
 		}
@@ -40,49 +47,50 @@ func MakeMessage(c echo.Context, secret string) (string, error) {
 		}
 	}
 
+	c := converter{config: config}
 	switch event {
 	case "issues":
 		var eventPayload issueEvent
 		if err := json.Unmarshal(payload, &eventPayload); err != nil {
 			return "", err
 		}
-		return handleIssuesEvent(&eventPayload)
+		return c.handleIssuesEvent(&eventPayload)
 	case "issue_comment":
 		var eventPayload issueCommentEvent
 		if err := json.Unmarshal(payload, &eventPayload); err != nil {
 			return "", err
 		}
-		return handleIssueCommentEvent(&eventPayload)
+		return c.handleIssueCommentEvent(&eventPayload)
 	case "pull_request":
 		var eventPayload pullRequestEvent
 		if err := json.Unmarshal(payload, &eventPayload); err != nil {
 			return "", err
 		}
-		return handlePullRequestEvent(&eventPayload)
+		return c.handlePullRequestEvent(&eventPayload)
 	case "pull_request_approved":
 		var eventPayload pullRequestEvent
 		if err := json.Unmarshal(payload, &eventPayload); err != nil {
 			return "", err
 		}
-		return handlePullRequestReviewEvent(&eventPayload, "approved")
+		return c.handlePullRequestReviewEvent(&eventPayload, "approved")
 	case "pull_request_comment":
 		var eventPayload pullRequestEvent
 		if err := json.Unmarshal(payload, &eventPayload); err != nil {
 			return "", err
 		}
-		return handlePullRequestReviewEvent(&eventPayload, "comment")
+		return c.handlePullRequestReviewEvent(&eventPayload, "comment")
 	case "pull_request_rejected":
 		var eventPayload pullRequestEvent
 		if err := json.Unmarshal(payload, &eventPayload); err != nil {
 			return "", err
 		}
-		return handlePullRequestReviewEvent(&eventPayload, "rejected")
+		return c.handlePullRequestReviewEvent(&eventPayload, "rejected")
 	default:
 		return "", nil
 	}
 }
 
-func handleIssuesEvent(payload *issueEvent) (string, error) {
+func (c *converter) handleIssuesEvent(payload *issueEvent) (string, error) {
 	senderName := payload.Sender.Username
 	issueName := fmt.Sprintf("Issue [#%v %s](%s) ",
 		payload.Issue.Number,
@@ -127,7 +135,7 @@ func handleIssuesEvent(payload *issueEvent) (string, error) {
 	return m.String(), nil
 }
 
-func handleIssueCommentEvent(payload *issueCommentEvent) (string, error) {
+func (c *converter) handleIssueCommentEvent(payload *issueCommentEvent) (string, error) {
 	senderName := payload.Sender.Username
 	issueName := fmt.Sprintf("[#%v %s](%s)",
 		payload.Issue.Number,
@@ -154,7 +162,18 @@ func handleIssueCommentEvent(payload *issueCommentEvent) (string, error) {
 	return m.String(), nil
 }
 
-func handlePullRequestEvent(payload *pullRequestEvent) (string, error) {
+func (c *converter) canProcessPR(payload *pullRequestEvent) bool {
+	if len(c.config.PREventTypesFilter) == 0 {
+		return true
+	}
+	return utils.FilterByRegexp(c.config.PREventTypesFilter, payload.Action)
+}
+
+func (c *converter) handlePullRequestEvent(payload *pullRequestEvent) (string, error) {
+	if !c.canProcessPR(payload) {
+		return "", nil
+	}
+
 	senderName := payload.Sender.Username
 	var m strings.Builder
 	m.WriteString("### ")
@@ -202,7 +221,7 @@ func handlePullRequestEvent(payload *pullRequestEvent) (string, error) {
 	return m.String(), nil
 }
 
-func handlePullRequestReviewEvent(payload *pullRequestEvent, status string) (string, error) {
+func (c *converter) handlePullRequestReviewEvent(payload *pullRequestEvent, status string) (string, error) {
 	senderName := payload.Sender.Username
 	var m strings.Builder
 	m.WriteString("### ")

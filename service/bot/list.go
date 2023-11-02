@@ -44,8 +44,11 @@ func list() *command {
 			for _, c := range cs {
 				sb.WriteString(fmt.Sprintf("### Converter `%s`\n", c.ID))
 				sb.WriteString("\n")
-				// TODO: チャンネル名
-				sb.WriteString(fmt.Sprintf("- 投稿先チャンネル: !{\"type\":\"channel\",\"raw\":\"ココ\",\"id\":\"%s\"}\n", c.ChannelID))
+				path, err := h.getChannelPath(c.ChannelID.String())
+				if err != nil {
+					return reply(fmt.Sprintf("internal error: %v", err))
+				}
+				sb.WriteString(fmt.Sprintf("- 投稿先チャンネル: %v\n", path))
 				sb.WriteString("\n")
 			}
 

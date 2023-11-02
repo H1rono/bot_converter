@@ -4,6 +4,7 @@ import (
 	"database/sql"
 
 	"github.com/gofrs/uuid"
+	"gorm.io/gorm/clause"
 
 	"git.trap.jp/toki/bot_converter/model"
 )
@@ -57,6 +58,19 @@ func (repo *GormRepository) GetConverterConfig(id uuid.UUID) (*model.Config, err
 		return nil, convertError(err)
 	}
 	return &c, nil
+}
+
+func (repo *GormRepository) SetConverterConfig(conf *model.Config) error {
+	err := repo.db.Clauses(clause.OnConflict{
+		DoUpdates: clause.AssignmentColumns([]string{
+			"push_branch_filter",
+			"pr_event_filter",
+		}),
+	}).Create(conf).Error
+	if err != nil {
+		return convertError(err)
+	}
+	return nil
 }
 
 func (repo *GormRepository) GetConverterByCreatorID(creatorID uuid.UUID) ([]*model.Converter, error) {

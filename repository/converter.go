@@ -15,6 +15,8 @@ type ConverterRepository interface {
 	GetConverter(id uuid.UUID) (*model.Converter, error)
 	// GetConverterConfig Converter Configを取得します
 	GetConverterConfig(id uuid.UUID) (*model.Config, error)
+	// SetConverterConfig Converter Configを設定します
+	SetConverterConfig(conf *model.Config) error
 	// GetConverterByCreatorID 指定されたユーザーによって作られたconverter全てを取得します。
 	GetConverterByCreatorID(creatorID uuid.UUID) ([]*model.Converter, error)
 	// DeleteConverter Converterを削除します

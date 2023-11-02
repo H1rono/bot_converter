@@ -14,7 +14,7 @@ func info() *command {
 		"Converterの情報を取得します。自身が持つconverterの一覧は、`/list`から確認することができます。\n" +
 		"`/info <converter_id>`\n" +
 		"\n" +
-		"- `/info 00000000-0000-0000-0000-000000000000` 指定したconverterを削除します。"
+		"- `/info 00000000-0000-0000-0000-000000000000` 指定したconverterの情報を取得します。"
 
 	return &command{
 		names: []string{"info"},

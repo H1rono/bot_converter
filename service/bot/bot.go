@@ -66,6 +66,7 @@ func (h *Handlers) setUpCommands() {
 	commands := []*command{
 		ping(),
 		create(),
+		config(),
 		info(),
 		list(),
 		deleteConverter(),
