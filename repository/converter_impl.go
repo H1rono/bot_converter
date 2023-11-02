@@ -64,7 +64,7 @@ func (repo *GormRepository) SetConverterConfig(conf *model.Config) error {
 	err := repo.db.Clauses(clause.OnConflict{
 		DoUpdates: clause.AssignmentColumns([]string{
 			"push_branch_filter",
-			"pr_event_filter",
+			"pr_event_types_filter",
 		}),
 	}).Create(conf).Error
 	if err != nil {
