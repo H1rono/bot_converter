@@ -109,7 +109,7 @@ func config() *command {
 				return reply("internal error: failed to get config")
 			}
 			if errors.Is(err, repository.ErrNotFound) {
-				conf = &model.Config{}
+				conf = &model.Config{ConverterID: converterID}
 			}
 
 			if len(args) == 2 {
