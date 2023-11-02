@@ -156,8 +156,10 @@ func (c *converter) handleIssueCommentEvent(payload *issueCommentEvent) (string,
 
 	m.WriteString(fmt.Sprintf(" by `%s`\n", senderName))
 	m.WriteString(fmt.Sprintf("%s\n", issueName))
-	m.WriteString(fmt.Sprintf("\n---\n"))
-	m.WriteString(fmt.Sprintf("%s", payload.Comment.Body))
+	if payload.Comment.Body != "" {
+		m.WriteString(fmt.Sprintf("\n---\n"))
+		m.WriteString(fmt.Sprintf("%s", payload.Comment.Body))
+	}
 
 	return m.String(), nil
 }
@@ -235,8 +237,10 @@ func (c *converter) handlePullRequestReviewEvent(payload *pullRequestEvent, stat
 	case "rejected":
 		m.WriteString(fmt.Sprintf(":comment: %s Changes Requested by `%s`", prName, senderName))
 	}
-	m.WriteString("\n---\n")
-	m.WriteString(payload.Review.Content)
+	if payload.Review.Content != "" {
+		m.WriteString("\n---\n")
+		m.WriteString(payload.Review.Content)
+	}
 
 	return m.String(), nil
 }
