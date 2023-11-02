@@ -53,11 +53,16 @@ func (repo *GormRepository) GetConverterConfig(id uuid.UUID) (*model.Config, err
 		return nil, ErrNilID
 	}
 
-	var c model.Config
-	if err := repo.db.Where(&model.Config{ConverterID: id}).First(&c).Error; err != nil {
+	var c []model.Config
+	// > If you want to avoid the ErrRecordNotFound error, you could use Find like db.Limit(1).Find(&user), the Find method accepts both struct and slice data.
+	// https://gorm.io/docs/query.html
+	if err := repo.db.Where(&model.Config{ConverterID: id}).Limit(1).Find(&c).Error; err != nil {
 		return nil, convertError(err)
 	}
-	return &c, nil
+	if len(c) == 0 {
+		return nil, ErrNotFound
+	}
+	return &c[0], nil
 }
 
 func (repo *GormRepository) SetConverterConfig(conf *model.Config) error {
