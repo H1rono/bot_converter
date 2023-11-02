@@ -12,7 +12,7 @@ func v2() *gormigrate.Migration {
 	return &gormigrate.Migration{
 		ID: "v2",
 		Migrate: func(db *gorm.DB) error {
-			return db.AutoMigrate(&model.Converter{})
+			return db.AutoMigrate(&model.Config{})
 		},
 	}
 }
