@@ -71,6 +71,7 @@ func (h *Handlers) setUpCommands() {
 		list(),
 		deleteConverter(),
 	}
+	commands = append(commands, help(commands))
 
 	for _, c := range commands {
 		for _, name := range c.names {
