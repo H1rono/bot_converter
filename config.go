@@ -9,6 +9,7 @@ import (
 	"github.com/spf13/viper"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 
 	"git.trap.jp/toki/bot_converter/migrate"
 	"git.trap.jp/toki/bot_converter/router"
@@ -91,6 +92,7 @@ func initDB() (*gorm.DB, error) {
 	if err != nil {
 		return nil, err
 	}
+	db.Logger.LogMode(logger.Warn)
 
 	if err := migrate.Migrate(db); err != nil {
 		return nil, err
