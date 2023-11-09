@@ -26,6 +26,8 @@ type Config struct {
 
 	// Traq describes traq bot settings.
 	Traq struct {
+		// Origin is traQ origin. e.g. "wss://q.trap.jp"
+		Origin string `mapstructure:"origin" yaml:"origin"`
 		// AccessToken is access token for accessing traq API.
 		AccessToken string `mapstructure:"accessToken" yaml:"accessToken"`
 		// UserID is the user UUID of the bot.
@@ -54,6 +56,7 @@ var c Config
 func init() {
 	viper.SetDefault("port", 3000)
 	viper.SetDefault("origin", "")
+	viper.SetDefault("traq.origin", "wss://q.trap.jp")
 	viper.SetDefault("traq.accessToken", "")
 	viper.SetDefault("traq.userID", uuid.Nil)
 	viper.SetDefault("traq.prefix", "/")
@@ -110,6 +113,7 @@ func provideRouterConfig() router.Config {
 // provideBotConfig provides service.Config.
 func provideBotConfig() bot.Config {
 	return bot.Config{
+		TraqOrigin:  c.Traq.Origin,
 		AccessToken: c.Traq.AccessToken,
 		BotID:       uuid.Must(uuid.FromString(c.Traq.UserID)),
 		Prefix:      c.Traq.Prefix,

@@ -29,6 +29,7 @@ type Handlers struct {
 }
 
 type Config struct {
+	TraqOrigin  string
 	AccessToken string
 	BotID       uuid.UUID
 	Prefix      string
@@ -51,6 +52,7 @@ func Start(c Config, repo repository.Repository) error {
 	}
 
 	b, err := traqbot.NewBot(&traqbot.Options{
+		Origin:      c.TraqOrigin,
 		AccessToken: c.AccessToken,
 	})
 	if err != nil {
