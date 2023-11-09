@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/gofrs/uuid"
-	"github.com/sapphi-red/go-traq"
+	"github.com/traPtitech/go-traq"
 	traqbot "github.com/traPtitech/traq-ws-bot"
 	"github.com/traPtitech/traq-ws-bot/payload"
 
@@ -21,7 +21,6 @@ type command struct {
 type Handlers struct {
 	repo     repository.Repository
 	api      *traq.APIClient
-	auth     context.Context
 	botID    uuid.UUID
 	prefix   string
 	origin   string
@@ -38,25 +37,21 @@ type Config struct {
 
 // Start starts the bot service. Blocks on success.
 func Start(c Config, repo repository.Repository) error {
-	client := traq.NewAPIClient(traq.NewConfiguration())
-	auth := context.WithValue(context.Background(), traq.ContextAccessToken, c.AccessToken)
-
-	h := &Handlers{
-		repo:     repo,
-		api:      client,
-		auth:     auth,
-		botID:    c.BotID,
-		prefix:   c.Prefix,
-		origin:   c.Origin,
-		commands: make(map[string]*command),
-	}
-
 	b, err := traqbot.NewBot(&traqbot.Options{
 		Origin:      c.TraqOrigin,
 		AccessToken: c.AccessToken,
 	})
 	if err != nil {
 		return err
+	}
+
+	h := &Handlers{
+		repo:     repo,
+		api:      b.API(),
+		botID:    c.BotID,
+		prefix:   c.Prefix,
+		origin:   c.Origin,
+		commands: make(map[string]*command),
 	}
 	h.setUpCommands()
 	h.setUpHandlers(b)
@@ -139,7 +134,7 @@ func (h *Handlers) handleMessageCreated(e *messageCreatedEvent) {
 
 // getChannelPath gets the path to the channel.
 func (h *Handlers) getChannelPath(channelID string) (string, error) {
-	c, _, err := h.api.ChannelApi.GetChannel(h.auth, channelID).Execute()
+	c, _, err := h.api.ChannelApi.GetChannel(context.TODO(), channelID).Execute()
 	if err != nil {
 		return "", err
 	}
@@ -156,7 +151,7 @@ func (h *Handlers) getChannelPath(channelID string) (string, error) {
 // postMessage posts message to the channel in which the event happened.
 func (h *Handlers) postMessage(e *messageCreatedEvent, message string) (*traq.Message, error) {
 	embed := true
-	m, _, err := h.api.ChannelApi.PostMessage(h.auth, e.Message.ChannelID).PostMessageRequest(traq.PostMessageRequest{
+	m, _, err := h.api.ChannelApi.PostMessage(context.TODO(), e.Message.ChannelID).PostMessageRequest(traq.PostMessageRequest{
 		Content: message,
 		Embed:   &embed,
 	}).Execute()
@@ -166,7 +161,7 @@ func (h *Handlers) postMessage(e *messageCreatedEvent, message string) (*traq.Me
 // postDirectMessage posts message to the specified user.
 func (h *Handlers) postDirectMessage(userID string, message string) (*traq.Message, error) {
 	embed := true
-	m, _, err := h.api.UserApi.PostDirectMessage(h.auth, userID).PostMessageRequest(traq.PostMessageRequest{
+	m, _, err := h.api.UserApi.PostDirectMessage(context.TODO(), userID).PostMessageRequest(traq.PostMessageRequest{
 		Content: message,
 		Embed:   &embed,
 	}).Execute()
