@@ -3,7 +3,7 @@ package router
 import (
 	"context"
 	"github.com/gofrs/uuid"
-	"github.com/sapphi-red/go-traq"
+	"github.com/traPtitech/go-traq"
 )
 
 type postMessageArgs struct {
@@ -20,7 +20,7 @@ func (h *Handlers) postMessage(channelID uuid.UUID, message string) (*traq.Messa
 }
 
 func (h *Handlers) _postMessage(_ context.Context, args postMessageArgs) (*traq.Message, error) {
-	m, _, err := h.api.ChannelApi.PostMessage(h.auth, args.channelID.String()).PostMessageRequest(traq.PostMessageRequest{
+	m, _, err := h.api.ChannelApi.PostMessage(context.Background(), args.channelID.String()).PostMessageRequest(traq.PostMessageRequest{
 		Content: args.message,
 	}).Execute()
 	return m, err

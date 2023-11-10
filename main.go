@@ -20,16 +20,21 @@ func main() {
 	repo := repository.NewGormRepository(db)
 
 	// bot
-	go func() {
-		if err := bot.Start(provideBotConfig(), repo); err != nil {
-			panic(err)
-		}
-	}()
+	b, err := bot.NewBotService(provideBotConfig(), repo)
+	if err != nil {
+		panic(err)
+	}
 
 	// router
 	e := echo.New()
-	router.SetUp(provideRouterConfig(), e, repo)
+	router.SetUp(provideRouterConfig(), e, repo, b.API())
 
+	// start
+	go func() {
+		if err := b.Start(); err != nil {
+			panic(err)
+		}
+	}()
 	if err := e.Start(fmt.Sprintf(":%d", c.Port)); err != nil {
 		log.Fatalf("an error occurred while starting server: %s", err)
 	}

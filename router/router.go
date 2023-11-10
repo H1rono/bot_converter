@@ -1,13 +1,12 @@
 package router
 
 import (
-	"context"
 	"github.com/motoki317/sc"
 	"net/http"
 	"time"
 
 	"github.com/labstack/echo/v4"
-	"github.com/sapphi-red/go-traq"
+	"github.com/traPtitech/go-traq"
 
 	"git.trap.jp/toki/bot_converter/repository"
 )
@@ -15,20 +14,15 @@ import (
 type Handlers struct {
 	repo        repository.Repository
 	api         *traq.APIClient
-	auth        context.Context
 	accessToken string
 
 	throttle *sc.Cache[postMessageArgs, *traq.Message]
 }
 
-func SetUp(c Config, e *echo.Echo, repo repository.Repository) {
-	client := traq.NewAPIClient(traq.NewConfiguration())
-	auth := context.WithValue(context.Background(), traq.ContextAccessToken, c.AccessToken)
-
+func SetUp(c Config, e *echo.Echo, repo repository.Repository, client *traq.APIClient) {
 	h := &Handlers{
 		repo:        repo,
 		api:         client,
-		auth:        auth,
 		accessToken: c.AccessToken,
 	}
 

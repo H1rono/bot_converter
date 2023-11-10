@@ -35,14 +35,14 @@ type Config struct {
 	Origin      string
 }
 
-// Start starts the bot service. Blocks on success.
-func Start(c Config, repo repository.Repository) error {
+// NewBotService creates a new bot service.
+func NewBotService(c Config, repo repository.Repository) (*traqbot.Bot, error) {
 	b, err := traqbot.NewBot(&traqbot.Options{
 		Origin:      c.TraqOrigin,
 		AccessToken: c.AccessToken,
 	})
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	h := &Handlers{
@@ -56,7 +56,7 @@ func Start(c Config, repo repository.Repository) error {
 	h.setUpCommands()
 	h.setUpHandlers(b)
 
-	return b.Start()
+	return b, nil
 }
 
 func (h *Handlers) setUpCommands() {
