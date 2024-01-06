@@ -129,7 +129,8 @@ func (c *converter) issuesHandler(payload github.IssuesPayload) (string, error) 
 		m.WriteString("\n")
 	}
 
-	hideBody := payload.Issue.Body == ""
+	isBot := strings.Contains(payload.Sender.Login, "[bot]")
+	hideBody := isBot || payload.Issue.Body == ""
 	if !hideBody {
 		if payload.Action == "opened" || payload.Action == "edited" {
 			m.WriteString("\n---\n")
@@ -181,7 +182,7 @@ func (c *converter) issueCommentHandler(payload github.IssueCommentPayload) (str
 		m.WriteString("\n")
 	}
 
-	hideBody := payload.Comment.Body == ""
+	hideBody := isBot || payload.Comment.Body == ""
 	if !hideBody {
 		if payload.Action == "created" || payload.Action == "edited" {
 			m.WriteString("\n---\n")
@@ -379,7 +380,8 @@ func (c *converter) pullRequestHandler(payload github.PullRequestPayload) (strin
 		m.WriteString("\n")
 	}
 
-	hideBody := payload.PullRequest.Body == ""
+	isBot := strings.Contains(payload.Sender.Login, "[bot]")
+	hideBody := isBot || payload.PullRequest.Body == ""
 	if !hideBody {
 		// send pull request body only on the first open or on edited
 		if payload.Action == "opened" || payload.Action == "edited" {
@@ -428,7 +430,8 @@ func (c *converter) pullRequestReviewHandler(payload github.PullRequestReviewPay
 		m.WriteString("\n")
 	}
 
-	hideBody := payload.Review.Body == ""
+	isBot := strings.Contains(payload.Sender.Login, "[bot]")
+	hideBody := isBot || payload.Review.Body == ""
 	if !hideBody {
 		m.WriteString("\n---\n")
 		m.WriteString(payload.Review.Body)
@@ -473,7 +476,7 @@ func (c *converter) pullRequestReviewCommentHandler(payload github.PullRequestRe
 		m.WriteString("\n")
 	}
 
-	hideBody := payload.Comment.Body == ""
+	hideBody := isBot || payload.Comment.Body == ""
 	if !hideBody {
 		m.WriteString("\n---\n")
 		m.WriteString(payload.Comment.Body)
