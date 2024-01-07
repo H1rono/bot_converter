@@ -437,6 +437,11 @@ func (c *converter) pullRequestReviewHandler(payload github.PullRequestReviewPay
 		m.WriteString(payload.Review.Body)
 	}
 
+	// Review comment event usually follows with actual comment body
+	if hideBody && action == "commented" {
+		return "", nil
+	}
+
 	return m.String(), nil
 }
 
