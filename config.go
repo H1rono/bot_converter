@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"strings"
+	"time"
 
 	"github.com/gofrs/uuid"
 	"github.com/spf13/viper"
@@ -96,6 +97,13 @@ func initDB() (*gorm.DB, error) {
 		return nil, err
 	}
 	db.Logger.LogMode(logger.Silent)
+
+	// Prevent bad idle connection closed by server side
+	sqlDB, err := db.DB()
+	if err != nil {
+		return nil, err
+	}
+	sqlDB.SetConnMaxIdleTime(10 * time.Second)
 
 	if err := migrate.Migrate(db); err != nil {
 		return nil, err
