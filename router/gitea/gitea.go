@@ -100,6 +100,7 @@ func (c *converter) handleIssuesEvent(payload *issueEvent) (string, error) {
 	var m strings.Builder
 	m.WriteString("### ")
 
+	// https://github.com/traPtitech/gitea/blob/8abe54a9d4db1fdce7c517dc500a51e77d1f2c16/modules/structs/hook.go#L321-L350
 	switch payload.Action {
 	case "opened":
 		m.WriteString(fmt.Sprintf(":git_issue_opened: %s Opened by `%s`\n", issueName, senderName))
@@ -130,6 +131,8 @@ func (c *converter) handleIssuesEvent(payload *issueEvent) (string, error) {
 		m.WriteString(fmt.Sprintf(":git_issue_closed: %s Closed by `%s`\n", issueName, senderName))
 	case "reopened":
 		m.WriteString(fmt.Sprintf(":git_issue_opened: %s Reopened by `%s`\n", issueName, senderName))
+	default:
+		return "", nil
 	}
 
 	return m.String(), nil
@@ -181,6 +184,7 @@ func (c *converter) handlePullRequestEvent(payload *pullRequestEvent) (string, e
 	m.WriteString("### ")
 	prName := fmt.Sprintf("Pull Request [#%v %s](%s)", payload.PullRequest.Number, payload.PullRequest.Title, payload.PullRequest.HTMLURL)
 
+	// https://github.com/traPtitech/gitea/blob/8abe54a9d4db1fdce7c517dc500a51e77d1f2c16/modules/structs/hook.go#L321-L350
 	switch payload.Action {
 	case "opened":
 		m.WriteString(fmt.Sprintf(":git_pull_request: %s Opened by `%s`\n", prName, senderName))
@@ -218,6 +222,8 @@ func (c *converter) handlePullRequestEvent(payload *pullRequestEvent) (string, e
 		}
 	case "reopened":
 		m.WriteString(fmt.Sprintf(":git_pull_request: %s Reopened by `%s`\n", prName, senderName))
+	default:
+		return "", nil
 	}
 
 	return m.String(), nil
@@ -229,6 +235,7 @@ func (c *converter) handlePullRequestReviewEvent(payload *pullRequestEvent, stat
 	m.WriteString("### ")
 	prName := fmt.Sprintf("Pull Request [#%v %s](%s)", payload.PullRequest.Number, payload.PullRequest.Title, payload.PullRequest.HTMLURL)
 
+	// https://github.com/traPtitech/gitea/blob/8abe54a9d4db1fdce7c517dc500a51e77d1f2c16/modules/webhook/type.go#L10-L34
 	switch status {
 	case "approved":
 		m.WriteString(fmt.Sprintf(":white_check_mark: %s Approved by `%s`", prName, senderName))
@@ -236,6 +243,8 @@ func (c *converter) handlePullRequestReviewEvent(payload *pullRequestEvent, stat
 		m.WriteString(fmt.Sprintf(":comment: %s New Review Comment by `%s`", prName, senderName))
 	case "rejected":
 		m.WriteString(fmt.Sprintf(":comment: %s Changes Requested by `%s`", prName, senderName))
+	default:
+		return "", nil
 	}
 	if payload.Review.Content != "" {
 		m.WriteString("\n---\n")
